@@ -46,6 +46,7 @@
             titleLabel = new Label();
             statusStrip = new StatusStrip();
             toolStripStatusLabel = new ToolStripStatusLabel();
+            hideCompletedCheckBox = new CheckBox();
             KeysGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).BeginInit();
             statusStrip.SuspendLayout();
@@ -244,11 +245,24 @@
             toolStripStatusLabel.Size = new Size(53, 21);
             toolStripStatusLabel.Text = "Ready";
             // 
+            // hideCompletedCheckBox
+            // 
+            hideCompletedCheckBox.AutoSize = true;
+            hideCompletedCheckBox.Location = new Point(886, 145);
+            hideCompletedCheckBox.Margin = new Padding(5);
+            hideCompletedCheckBox.Name = "hideCompletedCheckBox";
+            hideCompletedCheckBox.Size = new Size(167, 29);
+            hideCompletedCheckBox.TabIndex = 9;
+            hideCompletedCheckBox.Text = "Hide Co&mpleted";
+            hideCompletedCheckBox.UseVisualStyleBackColor = true;
+            hideCompletedCheckBox.CheckedChanged += HideCompletedCheckBox_CheckedChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1107, 959);
+            Controls.Add(hideCompletedCheckBox);
             Controls.Add(statusStrip);
             Controls.Add(titleLabel);
             Controls.Add(ObjectivesDataGridView);
@@ -291,5 +305,6 @@
         private Label titleLabel;
         private StatusStrip statusStrip;
         private ToolStripStatusLabel toolStripStatusLabel;
+        private CheckBox hideCompletedCheckBox;
     }
 }

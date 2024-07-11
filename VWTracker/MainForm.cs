@@ -110,9 +110,9 @@ namespace VWTracker
 
             ObjectivesDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
             {
-                DataPropertyName = "Claimed",
-                HeaderText = "Claimed",
-                Name = "Claimed",
+                DataPropertyName = "Completed",
+                HeaderText = "Completed",
+                Name = "Completed",
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
@@ -240,7 +240,7 @@ namespace VWTracker
                         g.Key.Track,
                         g.Key.Title,
                         Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
-                        Claimed = g.Any(o => o.Item1.Claimed)
+                        Completed = g.Any(o => o.Item1.Completed)
                     })
                     .ToList();
 
@@ -250,13 +250,14 @@ namespace VWTracker
                                 (WeeklyCheckBox.Checked && o.Endpoint == "weekly") ||
                                 (SpecialCheckBox.Checked && o.Endpoint == "special"))
                     .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
+                    .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
                     .Select(o => new
                     {
                         Account = o.Accounts.First(a => selectedAccounts.Contains(a)),
                         o.Endpoint,
                         o.Track,
                         o.Title,
-                        o.Claimed,
+                        o.Completed,
                         Others = string.Join(", ", o.Accounts.Where(a => a != o.Accounts.First(sa => selectedAccounts.Contains(sa))))
                     })
                     .ToList();
@@ -337,6 +338,11 @@ namespace VWTracker
         }
 
         private void SpecialCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+
+        private void HideCompletedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             UpdateObjectivesGrid();
         }

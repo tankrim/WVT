@@ -32,7 +32,7 @@ namespace WVTrackerLibrary
                         account: apiKey.Name,
                         title: obj.GetProperty("title").GetString() ?? string.Empty,
                         track: obj.GetProperty("track").GetString() ?? string.Empty,
-                        claimed: obj.GetProperty("claimed").GetBoolean()
+                        completed: obj.GetProperty("claimed").GetBoolean()
                     ));
             }
 
