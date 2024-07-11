@@ -199,6 +199,7 @@
             ObjectivesDataGridView.Location = new Point(47, 367);
             ObjectivesDataGridView.Margin = new Padding(5);
             ObjectivesDataGridView.Name = "ObjectivesDataGridView";
+            ObjectivesDataGridView.RowHeadersVisible = false;
             ObjectivesDataGridView.Size = new Size(1025, 1047);
             ObjectivesDataGridView.TabIndex = 6;
             // 
