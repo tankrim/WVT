@@ -222,45 +222,50 @@ namespace VWTracker
             Debug.WriteLine($"UpdateObjectivesGrid started. Total objectives: {_allObjectives.Count}");
             Debug.WriteLine($"Checkbox states: Daily: {DailyCheckBox.Checked}, Weekly: {WeeklyCheckBox.Checked}, Special: {SpecialCheckBox.Checked}");
 
-            // Log the first few objectives
-            for (int i = 0; i < Math.Min(5, _allObjectives.Count); i++)
-            {
-                var (objective, endpoint) = _allObjectives[i];
-                Debug.WriteLine($"Objective {i}: Account: {objective.Account}, Endpoint: {endpoint}, Track: {objective.Track}, Title: {objective.Title}, Claimed: {objective.Claimed}");
-            }
+            var selectedAccounts = AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
+                .Where(chk => chk.Checked)
+                .Select(chk => ((ApiKeyModel)chk.Tag).Name)
+                .ToList();
 
-            var filteredObjectives = _allObjectives
-                .Where(o => (DailyCheckBox.Checked && o.Item2 == "daily") ||
-                    (WeeklyCheckBox.Checked && o.Item2 == "weekly") ||
-                    (SpecialCheckBox.Checked && o.Item2 == "special"))
-                .Where(o => AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
-                    .Any(chk => chk.Checked && ((ApiKeyModel)chk.Tag).Name == o.Item1.Account))
+            Debug.WriteLine($"Selected accounts: {string.Join(", ", selectedAccounts)}");
+
+            // First, prepare all the data without filtering
+            var allObjectivesGrouped = _allObjectives
                 .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
                 .Select(g => new
                 {
-                    Account = g.First().Item1.Account,
                     Endpoint = g.Key.Item2,
                     Track = g.Key.Track,
                     Title = g.Key.Title,
-                    Claimed = g.First().Item1.Claimed,
-                    Others = string.Join(", ", g.Skip(1).Select(o => o.Item1.Account))
+                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
+                    Claimed = g.Any(o => o.Item1.Claimed)
+                })
+                .ToList();
+
+            // Then, filter and prepare for display
+            var filteredObjectives = allObjectivesGrouped
+                .Where(o => (DailyCheckBox.Checked && o.Endpoint == "daily") ||
+                            (WeeklyCheckBox.Checked && o.Endpoint == "weekly") ||
+                            (SpecialCheckBox.Checked && o.Endpoint == "special"))
+                .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
+                .Select(o => new
+                {
+                    Account = o.Accounts.First(a => selectedAccounts.Contains(a)),
+                    o.Endpoint,
+                    o.Track,
+                    o.Title,
+                    Claimed = o.Claimed,
+                    Others = string.Join(", ", o.Accounts.Where(a => a != o.Accounts.First(sa => selectedAccounts.Contains(sa))))
                 })
                 .ToList();
 
             Debug.WriteLine($"Filtered objectives count: {filteredObjectives.Count}");
 
-            ObjectivesDataGridView.DataSource = null;  // Clear the existing data source
+            ObjectivesDataGridView.DataSource = null;
             ObjectivesDataGridView.DataSource = filteredObjectives;
 
             Debug.WriteLine($"DataGridView Rows Count: {ObjectivesDataGridView.Rows.Count}");
             Debug.WriteLine($"DataGridView Columns Count: {ObjectivesDataGridView.Columns.Count}");
-
-            // Log the first few rows for debugging
-            for (int i = 0; i < Math.Min(5, ObjectivesDataGridView.Rows.Count); i++)
-            {
-                var row = ObjectivesDataGridView.Rows[i];
-                Debug.WriteLine($"Row {i}: {string.Join(", ", row.Cells.Cast<DataGridViewCell>().Select(c => c.Value))}");
-            }
 
             Debug.WriteLine("UpdateObjectivesGrid completed");
         }
