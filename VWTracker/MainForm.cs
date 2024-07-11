@@ -166,7 +166,7 @@ namespace VWTracker
             }
         }
 
-        private async void KeyAddButton_Click(object sender, EventArgs e)
+        private void KeyAddButton_Click(object sender, EventArgs e)
         {
             try
             {
