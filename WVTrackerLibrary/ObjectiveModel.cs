@@ -2,7 +2,7 @@
 {
     public class ObjectiveModel
     {
-        public string Account {  get; private set; }
+        public string Account { get; private set; }
         public string Title { get; private set; }
         public string Track { get; private set; }
         public bool Claimed { get; private set; }
