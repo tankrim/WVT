@@ -185,10 +185,10 @@
             // 
             // AccountsFlowLayoutPanel
             // 
-            AccountsFlowLayoutPanel.Location = new Point(566, 97);
+            AccountsFlowLayoutPanel.Location = new Point(566, 202);
             AccountsFlowLayoutPanel.Margin = new Padding(5);
             AccountsFlowLayoutPanel.Name = "AccountsFlowLayoutPanel";
-            AccountsFlowLayoutPanel.Size = new Size(314, 167);
+            AccountsFlowLayoutPanel.Size = new Size(487, 75);
             AccountsFlowLayoutPanel.TabIndex = 4;
             // 
             // UpdateButton
