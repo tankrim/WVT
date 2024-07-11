@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             KeysGroupBox = new GroupBox();
             KeyRemoveButton = new Button();
             KeyListBox = new ListBox();
@@ -216,6 +217,7 @@
             Controls.Add(DailyCheckBox);
             Controls.Add(KeysGroupBox);
             Font = new Font("Segoe UI", 14F);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(5);
             Name = "MainForm";
             Text = "WVT";
