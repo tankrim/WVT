@@ -43,6 +43,7 @@
             AccountsFlowLayoutPanel = new FlowLayoutPanel();
             UpdateButton = new Button();
             ObjectivesDataGridView = new DataGridView();
+            titleLabel = new Label();
             KeysGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).BeginInit();
             SuspendLayout();
@@ -214,11 +215,22 @@
             ObjectivesDataGridView.Size = new Size(1025, 1047);
             ObjectivesDataGridView.TabIndex = 6;
             // 
+            // titleLabel
+            // 
+            titleLabel.AutoSize = true;
+            titleLabel.Font = new Font("Segoe UI Light", 28F);
+            titleLabel.Location = new Point(627, 47);
+            titleLabel.Name = "titleLabel";
+            titleLabel.Size = new Size(364, 51);
+            titleLabel.TabIndex = 7;
+            titleLabel.Text = "Wizard's Vault Tracker";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1107, 959);
+            Controls.Add(titleLabel);
             Controls.Add(ObjectivesDataGridView);
             Controls.Add(UpdateButton);
             Controls.Add(AccountsFlowLayoutPanel);
@@ -254,5 +266,6 @@
         private FlowLayoutPanel AccountsFlowLayoutPanel;
         private Button UpdateButton;
         private DataGridView ObjectivesDataGridView;
+        private Label titleLabel;
     }
 }
