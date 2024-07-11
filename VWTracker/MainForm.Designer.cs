@@ -205,6 +205,7 @@
             // 
             // ObjectivesDataGridView
             // 
+            ObjectivesDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ObjectivesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             ObjectivesDataGridView.Location = new Point(47, 367);
             ObjectivesDataGridView.Margin = new Padding(5);
