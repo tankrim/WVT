@@ -68,9 +68,14 @@ namespace VWTracker
             foreach (var apiKey in _settings.ApiKeys)
             {
                 var checkBox = new CheckBox { Text = apiKey.Name, Checked = true, Tag = apiKey };
-                checkBox.CheckedChanged += (s, e) => UpdateObjectivesGrid();
+                checkBox.CheckedChanged += AccountCheckBox_CheckedChanged;
                 AccountsFlowLayoutPanel.Controls.Add(checkBox);
             }
+        }
+
+        private void AccountCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
         }
 
         private void SetupDataGridView()
