@@ -225,8 +225,11 @@ namespace VWTracker
             }
 
             var filteredObjectives = _allObjectives
+                .Where(o => (DailyCheckBox.Checked && o.Item2 == "daily") ||
+                    (WeeklyCheckBox.Checked && o.Item2 == "weekly") ||
+                    (SpecialCheckBox.Checked && o.Item2 == "special"))
                 .Where(o => AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
-                            .Any(chk => chk.Checked && ((ApiKeyModel)chk.Tag).Name == o.Item1.Account))
+                    .Any(chk => chk.Checked && ((ApiKeyModel)chk.Tag).Name == o.Item1.Account))
                 .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
                 .Select(g => new
                 {
@@ -313,5 +316,19 @@ namespace VWTracker
             Debug.WriteLine($"  Location: {ObjectivesDataGridView.Location}");
         }
 
+        private void DailyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+
+        private void WeeklyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+
+        private void SpecialCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
     }
 }
