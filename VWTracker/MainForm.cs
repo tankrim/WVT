@@ -8,15 +8,14 @@ namespace VWTracker
     public partial class MainForm : Form
     {
         private WVClient _wvClient;
-        private AppSettings _settings;
-        private List<(ObjectiveModel, string)> _allObjectives = new List<(ObjectiveModel, string)>();
+        private readonly AppSettings _settings;
+        private readonly List<(ObjectiveModel, string)> _allObjectives = [];
 
         public MainForm()
         {
             InitializeComponent();
             InitializeWVClient();
             _settings = new AppSettings();
-            //_settings.ClearSettings();  // Clear settings on startup, for debugging
             _settings.ReloadSettings();
             LoadApiKeys();
             SetupDataGridView();
@@ -26,7 +25,7 @@ namespace VWTracker
         private void InitializeWVClient()
         {
             string baseUrl = "https://api.guildwars2.com/v2/account/wizardsvault/";
-            List<string> endpoints = new List<string> { "daily", "weekly", "special" };
+            List<string> endpoints = ["daily", "weekly", "special"];
             _wvClient = new WVClient(baseUrl, endpoints);
         }
 
@@ -38,13 +37,12 @@ namespace VWTracker
                 Debug.WriteLine($"Key: {key.Name}, Token: {key.Token}");
             }
 
-            var selectedKey = KeyListBox.SelectedItem as ApiKeyModel;
             KeyListBox.DataSource = null;
             KeyListBox.DataSource = new BindingList<ApiKeyModel>(_settings.ApiKeys);
             KeyListBox.DisplayMember = "Name";
             KeyListBox.ValueMember = "Token";
 
-            if (selectedKey != null)
+            if (KeyListBox.SelectedItem is ApiKeyModel selectedKey)
             {
                 var index = _settings.ApiKeys.FindIndex(k => k.Name == selectedKey.Name && k.Token == selectedKey.Token);
                 if (index >= 0)
@@ -224,48 +222,51 @@ namespace VWTracker
             Debug.WriteLine($"UpdateObjectivesGrid started. Total objectives: {_allObjectives.Count}");
             Debug.WriteLine($"Checkbox states: Daily: {DailyCheckBox.Checked}, Weekly: {WeeklyCheckBox.Checked}, Special: {SpecialCheckBox.Checked}");
 
-            var selectedAccounts = AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
-                .Where(chk => chk.Checked)
-                .Select(chk => ((ApiKeyModel)chk.Tag).Name)
-                .ToList();
+            if (AccountsFlowLayoutPanel.Controls.Count > 0)
+            {
+                var selectedAccounts = AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
+                    .Where(chk => chk.Checked)
+                    .Select(chk => ((ApiKeyModel)chk.Tag).Name)
+                    .ToList();
 
-            Debug.WriteLine($"Selected accounts: {string.Join(", ", selectedAccounts)}");
+                Debug.WriteLine($"Selected accounts: {string.Join(", ", selectedAccounts)}");
 
-            // First, prepare all the data without filtering
-            var allObjectivesGrouped = _allObjectives
-                .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
-                .Select(g => new
-                {
-                    Endpoint = g.Key.Item2,
-                    Track = g.Key.Track,
-                    Title = g.Key.Title,
-                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
-                    Claimed = g.Any(o => o.Item1.Claimed)
-                })
-                .ToList();
+                // First, prepare all the data without filtering
+                var allObjectivesGrouped = _allObjectives
+                    .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
+                    .Select(g => new
+                    {
+                        Endpoint = g.Key.Item2,
+                        g.Key.Track,
+                        g.Key.Title,
+                        Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
+                        Claimed = g.Any(o => o.Item1.Claimed)
+                    })
+                    .ToList();
 
-            // Then, filter and prepare for display
-            var filteredObjectives = allObjectivesGrouped
-                .Where(o => (DailyCheckBox.Checked && o.Endpoint == "daily") ||
-                            (WeeklyCheckBox.Checked && o.Endpoint == "weekly") ||
-                            (SpecialCheckBox.Checked && o.Endpoint == "special"))
-                .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
-                .Select(o => new
-                {
-                    Account = o.Accounts.First(a => selectedAccounts.Contains(a)),
-                    o.Endpoint,
-                    o.Track,
-                    o.Title,
-                    Claimed = o.Claimed,
-                    Others = string.Join(", ", o.Accounts.Where(a => a != o.Accounts.First(sa => selectedAccounts.Contains(sa))))
-                })
-                .ToList();
+                // Then, filter and prepare for display
+                var filteredObjectives = allObjectivesGrouped
+                    .Where(o => (DailyCheckBox.Checked && o.Endpoint == "daily") ||
+                                (WeeklyCheckBox.Checked && o.Endpoint == "weekly") ||
+                                (SpecialCheckBox.Checked && o.Endpoint == "special"))
+                    .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
+                    .Select(o => new
+                    {
+                        Account = o.Accounts.First(a => selectedAccounts.Contains(a)),
+                        o.Endpoint,
+                        o.Track,
+                        o.Title,
+                        o.Claimed,
+                        Others = string.Join(", ", o.Accounts.Where(a => a != o.Accounts.First(sa => selectedAccounts.Contains(sa))))
+                    })
+                    .ToList();
 
-            Debug.WriteLine($"Filtered objectives count: {filteredObjectives.Count}");
+                Debug.WriteLine($"Filtered objectives count: {filteredObjectives.Count}");
 
-            ObjectivesDataGridView.DataSource = null;
-            ObjectivesDataGridView.DataSource = filteredObjectives;
+                ObjectivesDataGridView.DataSource = null;
+                ObjectivesDataGridView.DataSource = filteredObjectives;
 
+            }
             Debug.WriteLine($"DataGridView Rows Count: {ObjectivesDataGridView.Rows.Count}");
             Debug.WriteLine($"DataGridView Columns Count: {ObjectivesDataGridView.Columns.Count}");
 
@@ -280,7 +281,7 @@ namespace VWTracker
                 Debug.WriteLine("FetchAndUpdateObjectives started");
                 _allObjectives.Clear();
 
-                string[] endpoints = new[] { "daily", "weekly", "special" };
+                string[] endpoints = ["daily", "weekly", "special"];
 
                 int totalApiKeys = _settings.ApiKeys.Count;
                 int currentApiKey = 0;
@@ -323,18 +324,6 @@ namespace VWTracker
                 MessageBox.Show($"Error fetching objectives: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 toolStripStatusLabel.Text = "Update failed.";
             }
-        }
-
-        private void LogDataGridViewState()
-        {
-            Debug.WriteLine($"ObjectivesDataGridView State:");
-            Debug.WriteLine($"  Visible: {ObjectivesDataGridView.Visible}");
-            Debug.WriteLine($"  Enabled: {ObjectivesDataGridView.Enabled}");
-            Debug.WriteLine($"  Rows Count: {ObjectivesDataGridView.Rows.Count}");
-            Debug.WriteLine($"  Columns Count: {ObjectivesDataGridView.Columns.Count}");
-            Debug.WriteLine($"  DataSource: {ObjectivesDataGridView.DataSource?.GetType().Name ?? "null"}");
-            Debug.WriteLine($"  Size: {ObjectivesDataGridView.Size}");
-            Debug.WriteLine($"  Location: {ObjectivesDataGridView.Location}");
         }
 
         private void DailyCheckBox_CheckedChanged(object sender, EventArgs e)

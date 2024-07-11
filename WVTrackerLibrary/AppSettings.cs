@@ -9,17 +9,17 @@ public class AppSettings : ApplicationSettingsBase
     {
         get
         {
-            var keys = this["ApiKeys"] as List<ApiKeyModel>;
+            var keys = this[nameof(ApiKeys)] as List<ApiKeyModel>;
             if (keys == null)
             {
-                keys = new List<ApiKeyModel>();
-                this["ApiKeys"] = keys;
+                keys = [];
+                this[nameof(ApiKeys)] = keys;
             }
             return keys;
         }
         set
         {
-            this["ApiKeys"] = value;
+            this[nameof(ApiKeys)] = value;
         }
     }
 
