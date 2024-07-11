@@ -56,6 +56,7 @@
             KeysGroupBox.Controls.Add(KeyAddButton);
             KeysGroupBox.Controls.Add(KeyTextBox);
             KeysGroupBox.Controls.Add(KeyLabel);
+            KeysGroupBox.Font = new Font("Segoe UI", 16F);
             KeysGroupBox.Location = new Point(38, 35);
             KeysGroupBox.Margin = new Padding(5);
             KeysGroupBox.Name = "KeysGroupBox";
@@ -67,17 +68,19 @@
             // 
             // KeyRemoveButton
             // 
-            KeyRemoveButton.Location = new Point(215, 228);
+            KeyRemoveButton.Font = new Font("Segoe UI", 14F);
+            KeyRemoveButton.Location = new Point(215, 226);
             KeyRemoveButton.Margin = new Padding(5);
             KeyRemoveButton.Name = "KeyRemoveButton";
-            KeyRemoveButton.Size = new Size(138, 38);
+            KeyRemoveButton.Size = new Size(197, 38);
             KeyRemoveButton.TabIndex = 6;
-            KeyRemoveButton.Text = "Remove Key";
+            KeyRemoveButton.Text = "Remove Selected Key";
             KeyRemoveButton.UseVisualStyleBackColor = true;
             KeyRemoveButton.Click += KeyRemoveButton_Click;
             // 
             // KeyListBox
             // 
+            KeyListBox.Font = new Font("Segoe UI", 14F);
             KeyListBox.FormattingEnabled = true;
             KeyListBox.ItemHeight = 25;
             KeyListBox.Location = new Point(9, 110);
@@ -88,6 +91,7 @@
             // 
             // NameTextBox
             // 
+            NameTextBox.Font = new Font("Segoe UI", 14F);
             NameTextBox.Location = new Point(176, 62);
             NameTextBox.Margin = new Padding(5);
             NameTextBox.Name = "NameTextBox";
@@ -97,6 +101,7 @@
             // NameLabel
             // 
             NameLabel.AutoSize = true;
+            NameLabel.Font = new Font("Segoe UI", 14F);
             NameLabel.Location = new Point(176, 32);
             NameLabel.Margin = new Padding(5, 0, 5, 0);
             NameLabel.Name = "NameLabel";
@@ -106,7 +111,8 @@
             // 
             // KeyAddButton
             // 
-            KeyAddButton.Location = new Point(343, 62);
+            KeyAddButton.Font = new Font("Segoe UI", 14F);
+            KeyAddButton.Location = new Point(347, 59);
             KeyAddButton.Margin = new Padding(5);
             KeyAddButton.Name = "KeyAddButton";
             KeyAddButton.Size = new Size(118, 38);
@@ -117,6 +123,7 @@
             // 
             // KeyTextBox
             // 
+            KeyTextBox.Font = new Font("Segoe UI", 14F);
             KeyTextBox.Location = new Point(9, 62);
             KeyTextBox.Margin = new Padding(5);
             KeyTextBox.Name = "KeyTextBox";
@@ -126,6 +133,7 @@
             // KeyLabel
             // 
             KeyLabel.AutoSize = true;
+            KeyLabel.Font = new Font("Segoe UI", 14F);
             KeyLabel.Location = new Point(9, 32);
             KeyLabel.Margin = new Padding(5, 0, 5, 0);
             KeyLabel.Name = "KeyLabel";
@@ -166,7 +174,7 @@
             SpecialCheckBox.AutoSize = true;
             SpecialCheckBox.Checked = true;
             SpecialCheckBox.CheckState = CheckState.Checked;
-            SpecialCheckBox.Location = new Point(779, 287);
+            SpecialCheckBox.Location = new Point(789, 287);
             SpecialCheckBox.Margin = new Padding(5);
             SpecialCheckBox.Name = "SpecialCheckBox";
             SpecialCheckBox.Size = new Size(91, 29);
@@ -185,7 +193,8 @@
             // 
             // UpdateButton
             // 
-            UpdateButton.Location = new Point(954, 280);
+            UpdateButton.Font = new Font("Segoe UI", 16F);
+            UpdateButton.Location = new Point(954, 282);
             UpdateButton.Margin = new Padding(5);
             UpdateButton.Name = "UpdateButton";
             UpdateButton.Size = new Size(118, 38);
