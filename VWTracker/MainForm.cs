@@ -154,7 +154,16 @@ namespace VWTracker
 
         private async void UpdateButton_Click(object sender, EventArgs e)
         {
-            await FetchAndUpdateObjectives();
+            UpdateButton.Enabled = false;
+            toolStripStatusLabel.Text = "Starting update...";
+            try
+            {
+                await FetchAndUpdateObjectives();
+            }
+            finally
+            {
+                UpdateButton.Enabled = true;
+            }
         }
 
         private async void KeyAddButton_Click(object sender, EventArgs e)
@@ -267,22 +276,25 @@ namespace VWTracker
         {
             try
             {
+                toolStripStatusLabel.Text = "Updating objectives...";
                 Debug.WriteLine("FetchAndUpdateObjectives started");
                 _allObjectives.Clear();
 
-                var selectedEndpoints = new List<string>();
-                if (DailyCheckBox.Checked) selectedEndpoints.Add("daily");
-                if (WeeklyCheckBox.Checked) selectedEndpoints.Add("weekly");
-                if (SpecialCheckBox.Checked) selectedEndpoints.Add("special");
+                string[] endpoints = new[] { "daily", "weekly", "special" };
 
-                Debug.WriteLine($"Selected endpoints: {string.Join(", ", selectedEndpoints)}");
+                int totalApiKeys = _settings.ApiKeys.Count;
+                int currentApiKey = 0;
 
                 foreach (var apiKey in _settings.ApiKeys)
                 {
-                    foreach (var endpoint in selectedEndpoints)
+                    currentApiKey++;
+                    foreach (var endpoint in endpoints)
                     {
                         try
                         {
+                            toolStripStatusLabel.Text = $"Fetching {endpoint} objectives for {apiKey.Name} ({currentApiKey}/{totalApiKeys})...";
+                            Application.DoEvents(); // Allows the UI to update
+
                             Debug.WriteLine($"Fetching {endpoint} objectives for key: {apiKey.Name}");
                             var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint);
                             _allObjectives.AddRange(objectives.Select(o => (o, endpoint)));
@@ -297,13 +309,19 @@ namespace VWTracker
                 }
 
                 Debug.WriteLine($"Total objectives fetched: {_allObjectives.Count}");
+                toolStripStatusLabel.Text = "Updating grid...";
+                Application.DoEvents(); // Allows the UI to update
+
                 UpdateObjectivesGrid();
+
+                toolStripStatusLabel.Text = "Update completed.";
                 Debug.WriteLine("FetchAndUpdateObjectives completed");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error in FetchAndUpdateObjectives: {ex.Message}");
                 MessageBox.Show($"Error fetching objectives: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                toolStripStatusLabel.Text = "Update failed.";
             }
         }
 

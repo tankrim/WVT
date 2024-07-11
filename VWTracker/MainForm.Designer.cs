@@ -44,8 +44,11 @@
             UpdateButton = new Button();
             ObjectivesDataGridView = new DataGridView();
             titleLabel = new Label();
+            statusStrip = new StatusStrip();
+            toolStripStatusLabel = new ToolStripStatusLabel();
             KeysGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).BeginInit();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // KeysGroupBox
@@ -208,11 +211,11 @@
             // 
             ObjectivesDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             ObjectivesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ObjectivesDataGridView.Location = new Point(47, 367);
+            ObjectivesDataGridView.Location = new Point(38, 330);
             ObjectivesDataGridView.Margin = new Padding(5);
             ObjectivesDataGridView.Name = "ObjectivesDataGridView";
             ObjectivesDataGridView.RowHeadersVisible = false;
-            ObjectivesDataGridView.Size = new Size(1025, 1047);
+            ObjectivesDataGridView.Size = new Size(1025, 569);
             ObjectivesDataGridView.TabIndex = 6;
             // 
             // titleLabel
@@ -225,11 +228,28 @@
             titleLabel.TabIndex = 7;
             titleLabel.Text = "Wizard's Vault Tracker";
             // 
+            // statusStrip
+            // 
+            statusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel });
+            statusStrip.Location = new Point(0, 933);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(1107, 26);
+            statusStrip.TabIndex = 8;
+            statusStrip.Text = "statusStrip";
+            // 
+            // toolStripStatusLabel
+            // 
+            toolStripStatusLabel.Font = new Font("Segoe UI", 12F);
+            toolStripStatusLabel.Name = "toolStripStatusLabel";
+            toolStripStatusLabel.Size = new Size(53, 21);
+            toolStripStatusLabel.Text = "Ready";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1107, 959);
+            Controls.Add(statusStrip);
             Controls.Add(titleLabel);
             Controls.Add(ObjectivesDataGridView);
             Controls.Add(UpdateButton);
@@ -246,6 +266,8 @@
             KeysGroupBox.ResumeLayout(false);
             KeysGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).EndInit();
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -267,5 +289,7 @@
         private Button UpdateButton;
         private DataGridView ObjectivesDataGridView;
         private Label titleLabel;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel toolStripStatusLabel;
     }
 }
