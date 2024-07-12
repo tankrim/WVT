@@ -306,6 +306,12 @@ namespace VWTracker
                             _allObjectives.AddRange(objectives.Select(o => (o, endpoint)));
                             Debug.WriteLine($"Fetched {objectives.Count} {endpoint} objectives for key: {apiKey.Name}");
                         }
+                        // TODO - This is thrown 3 times (daily, weekly, special). Make the message box appear only once.
+                        catch (UnauthorizedAccessException ex)
+                        {
+                            Debug.WriteLine($"Unauthorized error for API key '{apiKey.Name}': {ex.Message}");
+                            MessageBox.Show($"The API key '{apiKey.Name}' appears to be invalid or unauthorized. Please check the key and try again.", "Invalid API Key", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                         catch (Exception ex)
                         {
                             Debug.WriteLine($"Error fetching {endpoint} objectives for API key '{apiKey.Name}': {ex.Message}");

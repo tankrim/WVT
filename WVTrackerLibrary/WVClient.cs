@@ -17,8 +17,16 @@ namespace WVTrackerLibrary
         public async Task<List<ObjectiveModel>> GetObjectivesAsync(ApiKeyModel apiKey, string endpoint)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Token);
+            
             var response = await _httpClient.GetAsync(endpoint);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedAccessException($"API key '{apiKey.Name}' is invalid or unauthorized.");
+            }
+
             response.EnsureSuccessStatusCode();
+
             var jsonString = await response.Content.ReadAsStringAsync();
 
             using var doc = JsonDocument.Parse(jsonString);
