@@ -7,7 +7,7 @@ namespace VWTracker
 {
     public partial class MainForm : Form
     {
-        private WVClient _wvClient;
+        private WVClient? _wvClient;
         private readonly AppSettings _settings;
         private readonly List<(ObjectiveModel, string)> _allObjectives = [];
 
