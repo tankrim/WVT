@@ -73,6 +73,7 @@
             // 
             // KeyRemoveButton
             // 
+            KeyRemoveButton.Enabled = false;
             KeyRemoveButton.Font = new Font("Segoe UI", 14F);
             KeyRemoveButton.Location = new Point(215, 226);
             KeyRemoveButton.Margin = new Padding(5);
@@ -151,6 +152,7 @@
             DailyCheckBox.AutoSize = true;
             DailyCheckBox.Checked = true;
             DailyCheckBox.CheckState = CheckState.Checked;
+            DailyCheckBox.Enabled = false;
             DailyCheckBox.Location = new Point(566, 287);
             DailyCheckBox.Margin = new Padding(5);
             DailyCheckBox.Name = "DailyCheckBox";
@@ -165,6 +167,7 @@
             WeeklyCheckBox.AutoSize = true;
             WeeklyCheckBox.Checked = true;
             WeeklyCheckBox.CheckState = CheckState.Checked;
+            WeeklyCheckBox.Enabled = false;
             WeeklyCheckBox.Location = new Point(669, 287);
             WeeklyCheckBox.Margin = new Padding(5);
             WeeklyCheckBox.Name = "WeeklyCheckBox";
@@ -179,6 +182,7 @@
             SpecialCheckBox.AutoSize = true;
             SpecialCheckBox.Checked = true;
             SpecialCheckBox.CheckState = CheckState.Checked;
+            SpecialCheckBox.Enabled = false;
             SpecialCheckBox.Location = new Point(789, 287);
             SpecialCheckBox.Margin = new Padding(5);
             SpecialCheckBox.Name = "SpecialCheckBox";
@@ -198,6 +202,7 @@
             // 
             // UpdateButton
             // 
+            UpdateButton.Enabled = false;
             UpdateButton.Font = new Font("Segoe UI", 16F);
             UpdateButton.Location = new Point(954, 282);
             UpdateButton.Margin = new Padding(5);
@@ -248,6 +253,7 @@
             // hideCompletedCheckBox
             // 
             hideCompletedCheckBox.AutoSize = true;
+            hideCompletedCheckBox.Enabled = false;
             hideCompletedCheckBox.Location = new Point(886, 145);
             hideCompletedCheckBox.Margin = new Padding(5);
             hideCompletedCheckBox.Name = "hideCompletedCheckBox";

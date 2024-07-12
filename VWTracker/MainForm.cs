@@ -20,6 +20,7 @@ namespace VWTracker
             LoadApiKeys();
             SetupDataGridView();
             StyleDataGridView();
+            UpdateControlsEnabledState();
         }
 
         private void InitializeWVClient()
@@ -50,6 +51,7 @@ namespace VWTracker
             }
 
             UpdateAccountFilters();
+            UpdateControlsEnabledState();
             Debug.WriteLine($"ListBox Items Count: {KeyListBox.Items.Count}");
         }
 
@@ -199,6 +201,7 @@ namespace VWTracker
 
                 NameTextBox.Clear();
                 KeyTextBox.Clear();
+                UpdateControlsEnabledState();
             }
             catch (Exception ex)
             {
@@ -214,6 +217,7 @@ namespace VWTracker
                 _settings.Save();
                 LoadApiKeys();
                 UpdateObjectivesGrid();
+                UpdateControlsEnabledState();
             }
         }
 
@@ -325,6 +329,18 @@ namespace VWTracker
                 MessageBox.Show($"Error fetching objectives: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 toolStripStatusLabel.Text = "Update failed.";
             }
+        }
+
+        private void UpdateControlsEnabledState()
+        {
+            bool hasKeys = KeyListBox.Items.Count > 0;
+
+            KeyRemoveButton.Enabled = hasKeys;
+            DailyCheckBox.Enabled = hasKeys;
+            WeeklyCheckBox.Enabled = hasKeys;
+            SpecialCheckBox.Enabled = hasKeys;
+            hideCompletedCheckBox.Enabled = hasKeys;
+            UpdateButton.Enabled = hasKeys;
         }
 
         private void DailyCheckBox_CheckedChanged(object sender, EventArgs e)
