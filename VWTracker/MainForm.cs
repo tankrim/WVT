@@ -40,7 +40,7 @@ namespace VWTracker
 
             KeyListBox.DataSource = null;
             KeyListBox.DataSource = new BindingList<ApiKeyModel>(_settings.ApiKeys);
-            KeyListBox.DisplayMember = "Name";
+            KeyListBox.DisplayMember = "ToString";
             KeyListBox.ValueMember = "Token";
 
             if (KeyListBox.SelectedItem is ApiKeyModel selectedKey)
@@ -58,7 +58,7 @@ namespace VWTracker
         private void UpdateAccountFilters()
         {
             AccountsFlowLayoutPanel.Controls.Clear();
-            foreach (var apiKey in _settings.ApiKeys)
+            foreach (var apiKey in _settings.ApiKeys.Where(k => k.IsValid))
             {
                 var checkBox = new CheckBox { Text = apiKey.Name, Checked = true, Tag = apiKey };
                 checkBox.CheckedChanged += AccountCheckBox_CheckedChanged;
@@ -294,6 +294,7 @@ namespace VWTracker
                 foreach (var apiKey in _settings.ApiKeys)
                 {
                     currentApiKey++;
+                    bool keyIsValid = true;
                     foreach (var endpoint in endpoints)
                     {
                         try
@@ -306,17 +307,23 @@ namespace VWTracker
                             _allObjectives.AddRange(objectives.Select(o => (o, endpoint)));
                             Debug.WriteLine($"Fetched {objectives.Count} {endpoint} objectives for key: {apiKey.Name}");
                         }
-                        // TODO - This is thrown 3 times (daily, weekly, special). Make the message box appear only once.
                         catch (UnauthorizedAccessException ex)
                         {
                             Debug.WriteLine($"Unauthorized error for API key '{apiKey.Name}': {ex.Message}");
                             MessageBox.Show($"The API key '{apiKey.Name}' appears to be invalid or unauthorized. Please check the key and try again.", "Invalid API Key", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            keyIsValid = false;
+                            break;
                         }
                         catch (Exception ex)
                         {
                             Debug.WriteLine($"Error fetching {endpoint} objectives for API key '{apiKey.Name}': {ex.Message}");
                             MessageBox.Show($"Error fetching {endpoint} objectives for API key '{apiKey.Name}': {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
+                    }
+                    if (!keyIsValid)
+                    {
+                        apiKey.IsValid = false;
+                        _settings.Save();
                     }
                 }
 
@@ -325,6 +332,7 @@ namespace VWTracker
                 Application.DoEvents(); // Allows the UI to update
 
                 UpdateObjectivesGrid();
+                LoadApiKeys();
 
                 toolStripStatusLabel.Text = "Update completed.";
                 Debug.WriteLine("FetchAndUpdateObjectives completed");
