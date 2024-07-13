@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using WVTracker;
 using WVTrackerLibrary;
 
 namespace VWTracker
@@ -21,6 +22,7 @@ namespace VWTracker
             SetupDataGridView();
             StyleDataGridView();
             UpdateControlsEnabledState();
+            StartBackgroundRefresh();
         }
 
         private void InitializeWVClient()
@@ -32,16 +34,11 @@ namespace VWTracker
 
         private void LoadApiKeys()
         {
-            Debug.WriteLine($"Loading API Keys. Count: {_settings.ApiKeys.Count}");
-            foreach (var key in _settings.ApiKeys)
-            {
-                Debug.WriteLine($"Key: {key.Name}, Token: {key.Token}");
-            }
-
             KeyListBox.DataSource = null;
             KeyListBox.DataSource = new BindingList<ApiKeyModel>(_settings.ApiKeys);
-            KeyListBox.DisplayMember = "ToString";
+            KeyListBox.DisplayMember = "DisplayName";
             KeyListBox.ValueMember = "Token";
+
 
             if (KeyListBox.SelectedItem is ApiKeyModel selectedKey)
             {
@@ -52,7 +49,6 @@ namespace VWTracker
 
             UpdateAccountFilters();
             UpdateControlsEnabledState();
-            Debug.WriteLine($"ListBox Items Count: {KeyListBox.Items.Count}");
         }
 
         private void UpdateAccountFilters()
@@ -73,8 +69,6 @@ namespace VWTracker
 
         private void SetupDataGridView()
         {
-            Debug.WriteLine("SetupDataGridView started");
-
             ObjectivesDataGridView.AutoGenerateColumns = false;
             ObjectivesDataGridView.Columns.Clear();
 
@@ -132,9 +126,6 @@ namespace VWTracker
             ObjectivesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ObjectivesDataGridView.MultiSelect = false;
             ObjectivesDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-            Debug.WriteLine($"DataGridView Columns Count after setup: {ObjectivesDataGridView.Columns.Count}");
-            Debug.WriteLine("SetupDataGridView completed");
         }
 
         private void StyleDataGridView()
@@ -223,8 +214,11 @@ namespace VWTracker
 
         private void UpdateObjectivesGrid()
         {
-            Debug.WriteLine($"UpdateObjectivesGrid started. Total objectives: {_allObjectives.Count}");
-            Debug.WriteLine($"Checkbox states: Daily: {DailyCheckBox.Checked}, Weekly: {WeeklyCheckBox.Checked}, Special: {SpecialCheckBox.Checked}");
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(UpdateObjectivesGrid));
+                return;
+            }
 
             if (AccountsFlowLayoutPanel.Controls.Count > 0)
             {
@@ -232,8 +226,6 @@ namespace VWTracker
                     .Where(chk => chk.Checked)
                     .Select(chk => ((ApiKeyModel)chk.Tag).Name)
                     .ToList();
-
-                Debug.WriteLine($"Selected accounts: {string.Join(", ", selectedAccounts)}");
 
                 // First, prepare all the data without filtering
                 var allObjectivesGrouped = _allObjectives
@@ -266,82 +258,126 @@ namespace VWTracker
                     })
                     .ToList();
 
-                Debug.WriteLine($"Filtered objectives count: {filteredObjectives.Count}");
-
                 ObjectivesDataGridView.DataSource = null;
                 ObjectivesDataGridView.DataSource = filteredObjectives;
 
             }
-            Debug.WriteLine($"DataGridView Rows Count: {ObjectivesDataGridView.Rows.Count}");
-            Debug.WriteLine($"DataGridView Columns Count: {ObjectivesDataGridView.Columns.Count}");
-
-            Debug.WriteLine("UpdateObjectivesGrid completed");
         }
 
         private async Task FetchAndUpdateObjectives()
         {
             try
             {
-                toolStripStatusLabel.Text = "Updating objectives...";
-                Debug.WriteLine("FetchAndUpdateObjectives started");
+                await this.InvokeAsync(() => toolStripStatusLabel.Text = "Updating objectives...");
                 _allObjectives.Clear();
+                var fetchTasks = _settings.ApiKeys
+                    .Where(k => k.IsValid)
+                    .SelectMany(apiKey => new[] { "daily", "weekly", "special" }
+                        .Select(endpoint => FetchObjectivesForEndpoint(apiKey, endpoint)))
+                    .ToList();
 
-                string[] endpoints = ["daily", "weekly", "special"];
+                var results = await Task.WhenAll(fetchTasks);
 
-                int totalApiKeys = _settings.ApiKeys.Count;
-                int currentApiKey = 0;
-
-                foreach (var apiKey in _settings.ApiKeys)
+                var invalidatedKeys = new HashSet<string>();
+                foreach (var result in results)
                 {
-                    currentApiKey++;
-                    bool keyIsValid = true;
-                    foreach (var endpoint in endpoints)
+                    if (result.Exception != null)
                     {
-                        try
+                        if (result.Exception is UnauthorizedAccessException)
                         {
-                            toolStripStatusLabel.Text = $"Fetching {endpoint} objectives for {apiKey.Name} ({currentApiKey}/{totalApiKeys})...";
-                            Application.DoEvents(); // Allows the UI to update
-
-                            Debug.WriteLine($"Fetching {endpoint} objectives for key: {apiKey.Name}");
-                            var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint);
-                            _allObjectives.AddRange(objectives.Select(o => (o, endpoint)));
-                            Debug.WriteLine($"Fetched {objectives.Count} {endpoint} objectives for key: {apiKey.Name}");
-                        }
-                        catch (UnauthorizedAccessException ex)
-                        {
-                            Debug.WriteLine($"Unauthorized error for API key '{apiKey.Name}': {ex.Message}");
-                            MessageBox.Show($"The API key '{apiKey.Name}' appears to be invalid or unauthorized. Please check the key and try again.", "Invalid API Key", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            keyIsValid = false;
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"Error fetching {endpoint} objectives for API key '{apiKey.Name}': {ex.Message}");
-                            MessageBox.Show($"Error fetching {endpoint} objectives for API key '{apiKey.Name}': {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            if (!invalidatedKeys.Contains(result.ApiKey.Name))
+                            {
+                                result.ApiKey.IsValid = false;
+                                invalidatedKeys.Add(result.ApiKey.Name);
+                            }
                         }
                     }
-                    if (!keyIsValid)
+                    else
                     {
-                        apiKey.IsValid = false;
-                        _settings.Save();
+                        _allObjectives.AddRange(result.Objectives.Select(o => (o, result.Endpoint)));
                     }
                 }
 
-                Debug.WriteLine($"Total objectives fetched: {_allObjectives.Count}");
-                toolStripStatusLabel.Text = "Updating grid...";
-                Application.DoEvents(); // Allows the UI to update
+                await this.InvokeAsync(() =>
+                {
+                    if (invalidatedKeys.Count > 0)
+                    {
+                        _settings.Save();
+                        LoadApiKeys();
+                        string invalidKeyNames = string.Join(", ", invalidatedKeys);
+                        MessageBox.Show($"The following API key(s) are invalid or unauthorized and have been marked as invalid: {invalidKeyNames}",
+                                        "Invalid API Key(s)", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
 
-                UpdateObjectivesGrid();
-                LoadApiKeys();
-
-                toolStripStatusLabel.Text = "Update completed.";
-                Debug.WriteLine("FetchAndUpdateObjectives completed");
+                    UpdateObjectivesGrid();
+                    toolStripStatusLabel.Text = "Update completed.";
+                });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error in FetchAndUpdateObjectives: {ex.Message}");
                 MessageBox.Show($"Error fetching objectives: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 toolStripStatusLabel.Text = "Update failed.";
+            }
+        }
+
+        private async Task<(ApiKeyModel ApiKey, string Endpoint, List<ObjectiveModel> Objectives, Exception Exception)> FetchObjectivesForEndpoint(ApiKeyModel apiKey, string endpoint)
+        {
+            try
+            {
+                var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint);
+                return (apiKey, endpoint, objectives, null);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return (apiKey, endpoint, null, new UnauthorizedAccessException($"API key '{apiKey.Name}' is unauthorized for endpoint '{endpoint}'.", ex));
+            }
+            catch (Exception ex)
+            {
+                return (apiKey, endpoint, null, ex);
+            }
+        }
+
+        // Background refresh
+        private readonly System.Threading.Timer? _refreshTimer;
+
+        private void StartBackgroundRefresh()
+        {
+            Task.Run(async () =>
+            {
+                while (!this.IsDisposed)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(15));
+                    if (!this.IsDisposed)
+                    {
+                        await RefreshInBackground();
+                    }
+                }
+            });
+        }
+
+        private async Task RefreshInBackground()
+        {
+            try
+            {
+                await FetchAndUpdateObjectives();
+
+                // Marshal all UI updates back to the UI thread
+                await this.InvokeAsync(() =>
+                {
+                    UpdateObjectivesGrid();
+                    toolStripStatusLabel.Text = "Background refresh completed.";
+                });
+            }
+            catch (Exception ex)
+            {
+                // Marshal error handling back to the UI thread
+                await this.InvokeAsync(() =>
+                {
+                    Debug.WriteLine($"Error in background refresh: {ex.Message}");
+                    toolStripStatusLabel.Text = "Background refresh failed.";
+                    // Optionally, show a non-modal message to inform the user
+                    // MessageBox.Show($"Background refresh failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
             }
         }
 

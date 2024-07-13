@@ -1,10 +1,13 @@
-﻿namespace WVTrackerLibrary
+﻿using System.Runtime.Serialization;
+
+namespace WVTrackerLibrary
 {
-    public class ApiKeyModel
+    public class ApiKeyModel : ISerializable
     {
         public string Name { get; set; } = string.Empty;
         public string _encryptedToken;
         public bool IsValid { get; set; } = true;
+        public string DisplayName => $"{Name} {(IsValid ? "" : "(Invalid)")}";
 
         public string Token
         {
@@ -23,7 +26,21 @@
 
         public override string ToString()
         {
-            return $"{Name} {(IsValid ? "" : "(Invalid)")}";
+            return DisplayName;
+        }
+
+        protected ApiKeyModel(SerializationInfo info, StreamingContext context)
+        {
+            Name = info.GetString(nameof(Name));
+            Token = info.GetString(nameof(Token));
+            IsValid = info.GetBoolean(nameof(IsValid));
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(Name), Name);
+            info.AddValue(nameof(Token), Token);
+            info.AddValue(nameof(IsValid), IsValid);
         }
     }
 }
