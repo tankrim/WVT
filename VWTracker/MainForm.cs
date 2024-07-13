@@ -247,15 +247,16 @@ namespace VWTracker
                                 (SpecialCheckBox.Checked && o.Endpoint == "special"))
                     .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
                     .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
-                    .Select(o => new
-                    {
-                        Account = o.Accounts.First(a => selectedAccounts.Contains(a)),
-                        o.Endpoint,
-                        o.Track,
-                        o.Title,
-                        o.Completed,
-                        Others = string.Join(", ", o.Accounts.Where(a => a != o.Accounts.First(sa => selectedAccounts.Contains(sa))))
-                    })
+                    .SelectMany(o => o.Accounts.Where(a => selectedAccounts.Contains(a))
+                        .Select(a => new
+                        {
+                            Account = a,
+                            o.Endpoint,
+                            o.Track,
+                            o.Title,
+                            o.Completed,
+                            Others = string.Join(", ", o.Accounts.Where(other => other != a))
+                        }))
                     .ToList();
 
                 ObjectivesDataGridView.DataSource = null;
@@ -277,8 +278,7 @@ namespace VWTracker
                 _allObjectives.Clear();
                 var fetchTasks = _settings.ApiKeys
                     .Where(k => k.IsValid)
-                    .SelectMany(apiKey => new[] { "daily", "weekly", "special" }
-                        .Select(endpoint => FetchObjectivesForEndpoint(apiKey, endpoint)))
+                    .SelectMany(apiKey => sourceArray.Select(endpoint => FetchObjectivesForEndpoint(apiKey, endpoint)))
                     .ToList();
 
                 var results = await Task.WhenAll(fetchTasks);
@@ -347,9 +347,9 @@ namespace VWTracker
             }
         }
 
-        // Background refresh
-        private readonly System.Threading.Timer? _refreshTimer;
+        private static readonly string[] sourceArray = new[] { "daily", "weekly", "special" };
 
+        // Background refresh
         private void StartBackgroundRefresh()
         {
             Task.Run(async () =>
