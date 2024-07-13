@@ -347,7 +347,7 @@ namespace VWTracker
             }
         }
 
-        private static readonly string[] sourceArray = new[] { "daily", "weekly", "special" };
+        private static readonly string[] sourceArray = ["daily", "weekly", "special"];
 
         // Background refresh
         private void StartBackgroundRefresh()
