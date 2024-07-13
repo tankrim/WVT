@@ -10,15 +10,25 @@
 
         public static string EncryptString(string input)
         {
-            byte[] encryptedData = ProtectedData.Protect(
-                Encoding.Unicode.GetBytes(input),
-                Entropy,
-                DataProtectionScope.CurrentUser);
-            return Convert.ToBase64String(encryptedData);
+            if (input != null)
+            {
+                byte[] encryptedData = ProtectedData.Protect(
+                    Encoding.Unicode.GetBytes(input),
+                    Entropy,
+                    DataProtectionScope.CurrentUser);
+                return Convert.ToBase64String(encryptedData);
+            }
+
+            throw new ArgumentNullException(nameof(input));
         }
 
-        public static string DecryptString(string encryptedData)
+        public static string DecryptString(string? encryptedData)
         {
+            if (string.IsNullOrEmpty(encryptedData))
+            {
+                return string.Empty;
+            }
+
             try
             {
                 byte[] decryptedData = ProtectedData.Unprotect(

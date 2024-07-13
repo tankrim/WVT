@@ -26,7 +26,7 @@ namespace WVTrackerLibrary
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Token);
 
-            if (_etagCache.TryGetValue($"{apiKey.Name}_{endpoint}", out string etag))
+            if (_etagCache.TryGetValue($"{apiKey.Name}_{endpoint}", out string? etag) && etag != null)
             {
                 _httpClient.DefaultRequestHeaders.IfNoneMatch.Clear();
                 _httpClient.DefaultRequestHeaders.IfNoneMatch.Add(new EntityTagHeaderValue(etag));
@@ -53,12 +53,12 @@ namespace WVTrackerLibrary
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var objectives = ParseObjectives(content, apiKey.Name);
+            var objectives = ParseObjectives(content, apiKey);
             await CacheObjectivesAsync(apiKey.Name, endpoint, objectives);
             return objectives;
         }
 
-        private List<ObjectiveModel> ParseObjectives(string content, string apiKeyName)
+        private static List<ObjectiveModel> ParseObjectives(string content, ApiKeyModel apiKey)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace WVTrackerLibrary
                 foreach (var obj in objectivesArray.EnumerateArray())
                 {
                     objectives.Add(new ObjectiveModel(
-                            account: apiKeyName,
+                            account: apiKey.Name,
                             title: obj.GetProperty("title").GetString() ?? string.Empty,
                             track: obj.GetProperty("track").GetString() ?? string.Empty,
                             completed: obj.GetProperty("claimed").GetBoolean()
@@ -82,7 +82,6 @@ namespace WVTrackerLibrary
             {
                 throw new JsonException($"Error parsing objectives: {ex.Message}", ex);
             }
-
         }
 
         private async Task CacheObjectivesAsync(string apiKey, string endpoint, List<ObjectiveModel> objectives)
@@ -90,7 +89,11 @@ namespace WVTrackerLibrary
             string fileName = GetCacheFileName(apiKey, endpoint);
             string json = JsonSerializer.Serialize(objectives);
 
-            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+            string? directoryName = Path.GetDirectoryName(fileName);
+            if (directoryName != null)
+            {
+                Directory.CreateDirectory(directoryName);
+            }
 
             await File.WriteAllTextAsync(fileName, json);
         }
@@ -102,15 +105,16 @@ namespace WVTrackerLibrary
             if (File.Exists(fileName))
             {
                 string json = await File.ReadAllTextAsync(fileName);
-                return JsonSerializer.Deserialize<List<ObjectiveModel>>(json);
+                List<ObjectiveModel>? objectives = JsonSerializer.Deserialize<List<ObjectiveModel>>(json);
+                return objectives ?? [];
             }
 
-            return new List<ObjectiveModel>();
+            return [];
         }
+
         private string GetCacheFileName(string apiKey, string endpoint)
         {
             return Path.Combine(_cacheDirectory, $"{apiKey}_{endpoint}.json");
         }
     }
-
 }

@@ -62,7 +62,7 @@ namespace VWTracker
             }
         }
 
-        private void AccountCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void AccountCheckBox_CheckedChanged(object? sender, EventArgs e)
         {
             UpdateObjectivesGrid();
         }
@@ -223,8 +223,8 @@ namespace VWTracker
             if (AccountsFlowLayoutPanel.Controls.Count > 0)
             {
                 var selectedAccounts = AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
-                    .Where(chk => chk.Checked)
-                    .Select(chk => ((ApiKeyModel)chk.Tag).Name)
+                    .Where(chk => chk.Checked && chk.Tag is ApiKeyModel model && model.Name != null)
+                    .Select(chk => ((ApiKeyModel)chk.Tag!).Name)
                     .ToList();
 
                 // First, prepare all the data without filtering
@@ -266,6 +266,11 @@ namespace VWTracker
 
         private async Task FetchAndUpdateObjectives()
         {
+            if (_wvClient == null)
+            {
+                MessageBox.Show("WVClient is not initialized.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             try
             {
                 await this.InvokeAsync(() => toolStripStatusLabel.Text = "Updating objectives...");
@@ -320,8 +325,13 @@ namespace VWTracker
             }
         }
 
-        private async Task<(ApiKeyModel ApiKey, string Endpoint, List<ObjectiveModel> Objectives, Exception Exception)> FetchObjectivesForEndpoint(ApiKeyModel apiKey, string endpoint)
+        private async Task<(ApiKeyModel ApiKey, string Endpoint, List<ObjectiveModel>? Objectives, Exception? Exception)> FetchObjectivesForEndpoint(ApiKeyModel apiKey, string endpoint)
         {
+            if (_wvClient == null)
+            {
+                return (apiKey, endpoint, null, new InvalidOperationException("WVClient is not initialized."));
+            }
+
             try
             {
                 var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint);
