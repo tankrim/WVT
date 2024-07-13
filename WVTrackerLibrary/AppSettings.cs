@@ -32,11 +32,4 @@ public class AppSettings : ApplicationSettingsBase
     {
         this.Reload();
     }
-
-    public void ClearSettings()
-    {
-        this.ApiKeys.Clear();
-        this.Save();
-        this.Reload();
-    }
 }

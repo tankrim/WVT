@@ -2,6 +2,16 @@
 {
     public class ApiKeyModel
     {
+        public string Name { get; set; } = string.Empty;
+        public string _encryptedToken;
+        public bool IsValid { get; set; } = true;
+
+        public string Token
+        {
+            get { return EncryptionHelper.DecryptString(_encryptedToken); }
+            set { _encryptedToken = EncryptionHelper.EncryptString(value); }
+        }
+
         public ApiKeyModel(string name, string token)
         {
             Name = name;
@@ -10,10 +20,6 @@
 
         // Parameterless constructor for serialization purposes
         public ApiKeyModel() { }
-
-        public string Name { get; set; } = string.Empty;
-        public string Token { get; set; } = string.Empty;
-        public bool IsValid { get; set; } = true;
 
         public override string ToString()
         {
