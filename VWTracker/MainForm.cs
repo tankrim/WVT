@@ -297,7 +297,7 @@ namespace VWTracker
                             }
                         }
                     }
-                    else
+                    else if (result.Objectives != null)
                     {
                         _allObjectives.AddRange(result.Objectives.Select(o => (o, result.Endpoint)));
                     }
