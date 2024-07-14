@@ -6,8 +6,6 @@ namespace WVTrackerLibrary
     public class WVClient
     {
         private readonly HttpClient _httpClient;
-        private readonly Dictionary<string, string> _etagCache = [];
-        private readonly string _cacheDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WVT", "Cache");
         private readonly List<string> _endpoints;
 
 
@@ -26,12 +24,6 @@ namespace WVTrackerLibrary
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Token);
 
-            if (_etagCache.TryGetValue($"{apiKey.Name}_{endpoint}", out string? etag) && etag != null)
-            {
-                _httpClient.DefaultRequestHeaders.IfNoneMatch.Clear();
-                _httpClient.DefaultRequestHeaders.IfNoneMatch.Add(new EntityTagHeaderValue(etag));
-            }
-
             var response = await _httpClient.GetAsync(endpoint);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -39,22 +31,10 @@ namespace WVTrackerLibrary
                 throw new UnauthorizedAccessException($"API key '{apiKey.Name}' is invalid or unauthorized.");
             }
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NotModified)
-            {
-                // Data hasn't changed, return cached data
-                return await GetCachedObjectivesAsync(apiKey.Name, endpoint);
-            }
-
             response.EnsureSuccessStatusCode();
-
-            if (response.Headers.ETag != null)
-            {
-                _etagCache[$"{apiKey.Name}_{endpoint}"] = response.Headers.ETag.Tag;
-            }
 
             var content = await response.Content.ReadAsStringAsync();
             var objectives = ParseObjectives(content, apiKey);
-            await CacheObjectivesAsync(apiKey.Name, endpoint, objectives);
             return objectives;
         }
 
@@ -82,39 +62,6 @@ namespace WVTrackerLibrary
             {
                 throw new JsonException($"Error parsing objectives: {ex.Message}", ex);
             }
-        }
-
-        private async Task CacheObjectivesAsync(string apiKey, string endpoint, List<ObjectiveModel> objectives)
-        {
-            string fileName = GetCacheFileName(apiKey, endpoint);
-            string json = JsonSerializer.Serialize(objectives);
-
-            string? directoryName = Path.GetDirectoryName(fileName);
-            if (directoryName != null)
-            {
-                Directory.CreateDirectory(directoryName);
-            }
-
-            await File.WriteAllTextAsync(fileName, json);
-        }
-
-        private async Task<List<ObjectiveModel>> GetCachedObjectivesAsync(string apiKey, string endpoint)
-        {
-            string fileName = GetCacheFileName(apiKey, endpoint);
-
-            if (File.Exists(fileName))
-            {
-                string json = await File.ReadAllTextAsync(fileName);
-                List<ObjectiveModel>? objectives = JsonSerializer.Deserialize<List<ObjectiveModel>>(json);
-                return objectives ?? [];
-            }
-
-            return [];
-        }
-
-        private string GetCacheFileName(string apiKey, string endpoint)
-        {
-            return Path.Combine(_cacheDirectory, $"{apiKey}_{endpoint}.json");
         }
     }
 }
