@@ -221,6 +221,8 @@ namespace WVTApp
                 return;
             }
 
+            int currentRowIndex = ObjectivesDataGridView.CurrentRow?.Index ?? -1;
+
             if (AccountsFlowLayoutPanel.Controls.Count > 0)
             {
                 var selectedAccounts = GetSelectedAccounts();
@@ -229,6 +231,13 @@ namespace WVTApp
 
                 ObjectivesDataGridView.DataSource = null;
                 ObjectivesDataGridView.DataSource = filteredObjectives;
+
+                if (currentRowIndex >= 0 && currentRowIndex < ObjectivesDataGridView.Rows.Count)
+                {
+                    ObjectivesDataGridView.ClearSelection();
+                    ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
+                    ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
+                }
             }
         }
 
@@ -485,11 +494,18 @@ namespace WVTApp
 
         private void ObjectivesDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex >= 0)
             {
-                if (e.RowIndex >= 0)
+                int currentRowIndex = e.RowIndex;
+                var objective = (DisplayObjective)ObjectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
+                ToggleObjectiveCompletion(objective.Account, objective.Endpoint, objective.Title);
+
+                // Restore the selection after the grid has been updated
+                if (ObjectivesDataGridView.Rows.Count > currentRowIndex)
                 {
-                    var objective = (DisplayObjective)ObjectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
-                    ToggleObjectiveCompletion(objective.Account, objective.Endpoint, objective.Title);
+                    ObjectivesDataGridView.ClearSelection();
+                    ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
+                    ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
                 }
             }
         }
