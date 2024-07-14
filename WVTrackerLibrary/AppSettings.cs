@@ -1,4 +1,7 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Xml.Serialization;
 
 namespace WVTrackerLibrary
 {
@@ -6,10 +9,38 @@ namespace WVTrackerLibrary
     {
         [UserScopedSetting]
         [SettingsSerializeAs(SettingsSerializeAs.Xml)]
+        [XmlArray]
         public List<ApiKeyModel> ApiKeys
         {
-            get => this[nameof(ApiKeys)] as List<ApiKeyModel> ?? [];
+            get
+            {
+                var value = this[nameof(ApiKeys)];
+                if (value == null)
+                {
+                    value = new List<ApiKeyModel>();
+                    this[nameof(ApiKeys)] = value;
+                }
+                return (List<ApiKeyModel>)value;
+            }
             set => this[nameof(ApiKeys)] = value;
+        }
+
+        [UserScopedSetting]
+        [SettingsSerializeAs(SettingsSerializeAs.Xml)]
+        [XmlArray]
+        public List<LocalObjectiveStatus> LocalObjectiveStatuses
+        {
+            get
+            {
+                var value = this[nameof(LocalObjectiveStatuses)];
+                if (value == null)
+                {
+                    value = new List<LocalObjectiveStatus>();
+                    this[nameof(LocalObjectiveStatuses)] = value;
+                }
+                return (List<LocalObjectiveStatus>)value;
+            }
+            set => this[nameof(LocalObjectiveStatuses)] = value;
         }
 
         public new void Save()

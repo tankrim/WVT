@@ -223,6 +223,7 @@
             ObjectivesDataGridView.RowHeadersVisible = false;
             ObjectivesDataGridView.Size = new Size(1025, 569);
             ObjectivesDataGridView.TabIndex = 6;
+            ObjectivesDataGridView.CellDoubleClick += ObjectivesDataGridView_CellDoubleClick;
             // 
             // titleLabel
             // 

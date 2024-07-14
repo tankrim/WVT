@@ -248,8 +248,7 @@ namespace VWTracker
                     Endpoint = g.Key.Item2,
                     Track = g.Key.Track,
                     Title = g.Key.Title,
-                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
-                    Completed = g.Any(o => o.Item1.Completed)
+                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList()
                 })
                 .ToList();
         }
@@ -259,7 +258,6 @@ namespace VWTracker
             return allObjectivesGrouped
                 .Where(o => IsObjectiveTypeSelected(o.Endpoint))
                 .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
-                .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
                 .SelectMany(o => o.Accounts.Where(a => selectedAccounts.Contains(a))
                     .Select(a => new DisplayObjective
                     {
@@ -267,9 +265,10 @@ namespace VWTracker
                         Endpoint = o.Endpoint,
                         Track = o.Track,
                         Title = o.Title,
-                        Completed = o.Completed,
+                        Completed = IsLocallyCompleted(o.Endpoint, o.Title, a),
                         Others = string.Join(", ", o.Accounts.Where(other => other != a))
                     }))
+                .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
                 .ToList();
         }
 
@@ -279,7 +278,30 @@ namespace VWTracker
                    (WeeklyCheckBox.Checked && endpoint == "weekly") ||
                    (SpecialCheckBox.Checked && endpoint == "special");
         }
-
+        private bool IsLocallyCompleted(GroupedObjective objective, string account)
+        {
+            return _settings.LocalObjectiveStatuses.Any(s =>
+                s.AccountName == account &&
+                s.Endpoint == objective.Endpoint &&
+                s.Title == objective.Title &&
+                s.IsCompleted);
+        }
+        private bool IsLocallyCompleted(string endpoint, string title, string account)
+        {
+            return _settings.LocalObjectiveStatuses.Any(s =>
+                s.AccountName == account &&
+                s.Endpoint == endpoint &&
+                s.Title == title &&
+                s.IsCompleted);
+        }
+        private bool IsLocallyCompleted(GroupedObjective objective)
+        {
+            return _settings.LocalObjectiveStatuses.Any(s =>
+                objective.Accounts.Contains(s.AccountName) &&
+                s.Endpoint == objective.Endpoint &&
+                s.Title == objective.Title &&
+                s.IsCompleted);
+        }
         private async Task FetchAndUpdateObjectives()
         {
             if (_wvClient == null)
@@ -379,7 +401,6 @@ namespace VWTracker
                 }
             });
         }
-
         private async Task RefreshInBackground()
         {
             try
@@ -417,7 +438,30 @@ namespace VWTracker
             hideCompletedCheckBox.Enabled = hasKeys;
             UpdateButton.Enabled = hasKeys;
         }
+        private void ToggleObjectiveCompletion(string account, string endpoint, string title)
+        {
+            var status = _settings.LocalObjectiveStatuses.FirstOrDefault(s =>
+                s.AccountName == account && s.Endpoint == endpoint && s.Title == title);
 
+            if (status == null)
+            {
+                status = new LocalObjectiveStatus
+                {
+                    AccountName = account,
+                    Endpoint = endpoint,
+                    Title = title,
+                    IsCompleted = true
+                };
+                _settings.LocalObjectiveStatuses.Add(status);
+            }
+            else
+            {
+                status.IsCompleted = !status.IsCompleted;
+            }
+
+            _settings.Save();
+            UpdateObjectivesGrid();
+        }
         private void DailyCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             UpdateObjectivesGrid();
@@ -436,6 +480,17 @@ namespace VWTracker
         private void HideCompletedCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             UpdateObjectivesGrid();
+        }
+
+        private void ObjectivesDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            {
+                if (e.RowIndex >= 0)
+                {
+                    var objective = (DisplayObjective)ObjectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
+                    ToggleObjectiveCompletion(objective.Account, objective.Endpoint, objective.Title);
+                }
+            }
         }
     }
 }

@@ -52,8 +52,7 @@ namespace WVTrackerLibrary
                     objectives.Add(new ObjectiveModel(
                             account: apiKey.Name,
                             title: obj.GetProperty("title").GetString() ?? string.Empty,
-                            track: obj.GetProperty("track").GetString() ?? string.Empty,
-                            completed: obj.GetProperty("claimed").GetBoolean()
+                            track: obj.GetProperty("track").GetString() ?? string.Empty
                         ));
                 }
                 return objectives;
