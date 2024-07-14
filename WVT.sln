@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WVTApp", "VWTracker\WVTApp.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WVTLib", "WVTrackerLibrary\WVTLib.csproj", "{15D8C800-4F59-4815-B3F8-1F8E22D014B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WVTTests", "WVTTests\WVTTests.csproj", "{613AF638-BDE2-4838-B96D-EE9D477B125E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{15D8C800-4F59-4815-B3F8-1F8E22D014B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15D8C800-4F59-4815-B3F8-1F8E22D014B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15D8C800-4F59-4815-B3F8-1F8E22D014B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{613AF638-BDE2-4838-B96D-EE9D477B125E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{613AF638-BDE2-4838-B96D-EE9D477B125E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{613AF638-BDE2-4838-B96D-EE9D477B125E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{613AF638-BDE2-4838-B96D-EE9D477B125E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
