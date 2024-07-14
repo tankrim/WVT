@@ -1,35 +1,25 @@
 ﻿using System.Configuration;
-using WVTrackerLibrary;
 
-public class AppSettings : ApplicationSettingsBase
+namespace WVTrackerLibrary
 {
-    [UserScopedSetting]
-    [SettingsSerializeAs(SettingsSerializeAs.Xml)]
-    public List<ApiKeyModel> ApiKeys
+    public class AppSettings : ApplicationSettingsBase
     {
-        get
+        [UserScopedSetting]
+        [SettingsSerializeAs(SettingsSerializeAs.Xml)]
+        public List<ApiKeyModel> ApiKeys
         {
-            var keys = this[nameof(ApiKeys)] as List<ApiKeyModel>;
-            if (keys == null)
-            {
-                keys = [];
-                this[nameof(ApiKeys)] = keys;
-            }
-            return keys;
+            get => this[nameof(ApiKeys)] as List<ApiKeyModel> ?? [];
+            set => this[nameof(ApiKeys)] = value;
         }
-        set
+
+        public new void Save()
         {
-            this[nameof(ApiKeys)] = value;
+            base.Save();
         }
-    }
 
-    public new void Save()
-    {
-        base.Save();
-    }
-
-    public void ReloadSettings()
-    {
-        this.Reload();
+        public void ReloadSettings()
+        {
+            Reload();
+        }
     }
 }
