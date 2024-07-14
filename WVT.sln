@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WVTracker", "VWTracker\WVTracker.csproj", "{5D2C982D-EF2B-4BEE-B138-269F1C407054}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WVTApp", "VWTracker\WVTApp.csproj", "{5D2C982D-EF2B-4BEE-B138-269F1C407054}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WVTrackerLibrary", "WVTrackerLibrary\WVTrackerLibrary.csproj", "{15D8C800-4F59-4815-B3F8-1F8E22D014B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WVTLib", "WVTrackerLibrary\WVTLib.csproj", "{15D8C800-4F59-4815-B3F8-1F8E22D014B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

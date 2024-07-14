@@ -1,4 +1,4 @@
-﻿namespace WVTrackerLibrary
+﻿namespace WVTLib.Models
 {
     public class ObjectiveModel(string account, string title, string track)
     {

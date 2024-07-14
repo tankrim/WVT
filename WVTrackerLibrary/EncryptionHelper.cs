@@ -1,4 +1,4 @@
-﻿namespace WVTrackerLibrary
+﻿namespace WVTLib
 {
     using System;
     using System.Security.Cryptography;

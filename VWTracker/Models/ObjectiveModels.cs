@@ -1,4 +1,4 @@
-﻿namespace VWTracker
+﻿namespace WVTApp.Models
 {
     public class GroupedObjective
     {

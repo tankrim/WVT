@@ -1,4 +1,4 @@
-namespace VWTracker
+namespace WVTApp
 {
     static class Program
     {

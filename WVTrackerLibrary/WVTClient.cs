@@ -1,15 +1,16 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using WVTLib.Models;
 
-namespace WVTrackerLibrary
+namespace WVTLib
 {
-    public class WVClient
+    public class WVTClient
     {
         private readonly HttpClient _httpClient;
         private readonly List<string> _endpoints;
 
 
-        public WVClient(string baseUrl, List<string> endpoints)
+        public WVTClient(string baseUrl, List<string> endpoints)
         {
             _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
             _endpoints = endpoints;

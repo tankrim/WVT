@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WVTrackerLibrary\WVTrackerLibrary.csproj" />
+    <ProjectReference Include="..\WVTrackerLibrary\WVTLib.csproj" />
   </ItemGroup>
 
 </Project>

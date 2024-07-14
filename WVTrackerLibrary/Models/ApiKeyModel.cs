@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace WVTrackerLibrary
+namespace WVTLib.Models
 {
     [Serializable]
     public class ApiKeyModel : ISerializable

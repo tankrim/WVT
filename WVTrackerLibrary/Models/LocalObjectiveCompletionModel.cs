@@ -1,7 +1,7 @@
-﻿namespace WVTrackerLibrary
+﻿namespace WVTLib.Models
 {
     [Serializable]
-    public class LocalObjectiveStatus
+    public class LocalObjectiveCompletionModel
     {
         public string AccountName { get; set; }
         public string Endpoint { get; set; }

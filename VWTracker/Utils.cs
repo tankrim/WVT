@@ -1,4 +1,4 @@
-﻿namespace WVTracker
+﻿namespace WVTApp
 {
     public static class ControlExtensions
     {

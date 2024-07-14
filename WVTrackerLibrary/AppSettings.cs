@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Xml.Serialization;
+using WVTLib.Models;
 
-namespace WVTrackerLibrary
+namespace WVTLib
 {
     public class AppSettings : ApplicationSettingsBase
     {
@@ -28,17 +29,17 @@ namespace WVTrackerLibrary
         [UserScopedSetting]
         [SettingsSerializeAs(SettingsSerializeAs.Xml)]
         [XmlArray]
-        public List<LocalObjectiveStatus> LocalObjectiveStatuses
+        public List<LocalObjectiveCompletionModel> LocalObjectiveStatuses
         {
             get
             {
                 var value = this[nameof(LocalObjectiveStatuses)];
                 if (value == null)
                 {
-                    value = new List<LocalObjectiveStatus>();
+                    value = new List<LocalObjectiveCompletionModel>();
                     this[nameof(LocalObjectiveStatuses)] = value;
                 }
-                return (List<LocalObjectiveStatus>)value;
+                return (List<LocalObjectiveCompletionModel>)value;
             }
             set => this[nameof(LocalObjectiveStatuses)] = value;
         }

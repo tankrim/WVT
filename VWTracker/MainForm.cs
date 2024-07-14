@@ -1,14 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using WVTracker;
-using WVTrackerLibrary;
+using WVTApp.Models;
+using WVTLib;
+using WVTLib.Models;
 
-namespace VWTracker
+namespace WVTApp
 {
     public partial class MainForm : Form
     {
-        private WVClient? _wvClient;
+        private WVTClient? _wvClient;
         private readonly AppSettings _settings;
         private readonly List<(ObjectiveModel, string)> _allObjectives = [];
 
@@ -29,7 +30,7 @@ namespace VWTracker
         {
             string baseUrl = "https://api.guildwars2.com/v2/account/wizardsvault/";
             List<string> endpoints = ["daily", "weekly", "special"];
-            _wvClient = new WVClient(baseUrl, endpoints);
+            _wvClient = new WVTClient(baseUrl, endpoints);
         }
 
         private void LoadApiKeys()
@@ -445,7 +446,7 @@ namespace VWTracker
 
             if (status == null)
             {
-                status = new LocalObjectiveStatus
+                status = new LocalObjectiveCompletionModel
                 {
                     AccountName = account,
                     Endpoint = endpoint,
