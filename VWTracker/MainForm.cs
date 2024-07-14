@@ -222,47 +222,62 @@ namespace VWTracker
 
             if (AccountsFlowLayoutPanel.Controls.Count > 0)
             {
-                var selectedAccounts = AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
-                    .Where(chk => chk.Checked && chk.Tag is ApiKeyModel model && model.Name != null)
-                    .Select(chk => ((ApiKeyModel)chk.Tag!).Name)
-                    .ToList();
-
-                // First, prepare all the data without filtering
-                var allObjectivesGrouped = _allObjectives
-                    .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
-                    .Select(g => new
-                    {
-                        Endpoint = g.Key.Item2,
-                        g.Key.Track,
-                        g.Key.Title,
-                        Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
-                        Completed = g.Any(o => o.Item1.Completed)
-                    })
-                    .ToList();
-
-                // Then, filter and prepare for display
-                var filteredObjectives = allObjectivesGrouped
-                    .Where(o => (DailyCheckBox.Checked && o.Endpoint == "daily") ||
-                                (WeeklyCheckBox.Checked && o.Endpoint == "weekly") ||
-                                (SpecialCheckBox.Checked && o.Endpoint == "special"))
-                    .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
-                    .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
-                    .SelectMany(o => o.Accounts.Where(a => selectedAccounts.Contains(a))
-                        .Select(a => new
-                        {
-                            Account = a,
-                            o.Endpoint,
-                            o.Track,
-                            o.Title,
-                            o.Completed,
-                            Others = string.Join(", ", o.Accounts.Where(other => other != a))
-                        }))
-                    .ToList();
+                var selectedAccounts = GetSelectedAccounts();
+                var allObjectivesGrouped = GroupAllObjectives();
+                var filteredObjectives = FilterAndPrepareObjectives(allObjectivesGrouped, selectedAccounts);
 
                 ObjectivesDataGridView.DataSource = null;
                 ObjectivesDataGridView.DataSource = filteredObjectives;
-
             }
+        }
+
+        private List<string> GetSelectedAccounts()
+        {
+            return AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
+                .Where(chk => chk.Checked && chk.Tag is ApiKeyModel model && model.Name != null)
+                .Select(chk => ((ApiKeyModel)chk.Tag!).Name)
+                .ToList();
+        }
+
+        private List<GroupedObjective> GroupAllObjectives()
+        {
+            return _allObjectives
+                .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
+                .Select(g => new GroupedObjective
+                {
+                    Endpoint = g.Key.Item2,
+                    Track = g.Key.Track,
+                    Title = g.Key.Title,
+                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList(),
+                    Completed = g.Any(o => o.Item1.Completed)
+                })
+                .ToList();
+        }
+
+        private List<DisplayObjective> FilterAndPrepareObjectives(List<GroupedObjective> allObjectivesGrouped, List<string> selectedAccounts)
+        {
+            return allObjectivesGrouped
+                .Where(o => IsObjectiveTypeSelected(o.Endpoint))
+                .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
+                .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
+                .SelectMany(o => o.Accounts.Where(a => selectedAccounts.Contains(a))
+                    .Select(a => new DisplayObjective
+                    {
+                        Account = a,
+                        Endpoint = o.Endpoint,
+                        Track = o.Track,
+                        Title = o.Title,
+                        Completed = o.Completed,
+                        Others = string.Join(", ", o.Accounts.Where(other => other != a))
+                    }))
+                .ToList();
+        }
+
+        private bool IsObjectiveTypeSelected(string endpoint)
+        {
+            return (DailyCheckBox.Checked && endpoint == "daily") ||
+                   (WeeklyCheckBox.Checked && endpoint == "weekly") ||
+                   (SpecialCheckBox.Checked && endpoint == "special");
         }
 
         private async Task FetchAndUpdateObjectives()
