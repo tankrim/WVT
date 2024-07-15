@@ -29,8 +29,8 @@ namespace WVTApp
 
                 ApplicationConfiguration.Initialize();
 
-                Application.Run(new MainForm());
                 Log.Information("WVT Started");
+                Application.Run(new MainForm());
             }
             catch (Exception ex)
             {
