@@ -11,6 +11,7 @@ namespace WVTApp
 {
     public partial class MainForm : Form
     {
+        // Constructor and Initialization
         private WVTClient? _wvClient;
         private readonly AppSettings _settings;
         private readonly List<(ObjectiveModel, string)> _allObjectives = [];
@@ -66,12 +67,17 @@ namespace WVTApp
                 AccountsFlowLayoutPanel.Controls.Add(checkBox);
             }
         }
-
-        private void AccountCheckBox_CheckedChanged(object? sender, EventArgs e)
+        private void UpdateControlsEnabledState()
         {
-            UpdateObjectivesGrid();
-        }
+            bool hasKeys = KeyListBox.Items.Count > 0;
 
+            KeyRemoveButton.Enabled = hasKeys;
+            DailyCheckBox.Enabled = hasKeys;
+            WeeklyCheckBox.Enabled = hasKeys;
+            SpecialCheckBox.Enabled = hasKeys;
+            hideCompletedCheckBox.Enabled = hasKeys;
+            UpdateButton.Enabled = hasKeys;
+        }
         private void SetupDataGridView()
         {
             ObjectivesDataGridView.AutoGenerateColumns = false;
@@ -147,7 +153,27 @@ namespace WVTApp
             ObjectivesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(20, 25, 72);
             ObjectivesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
         }
-
+        private void StartBackgroundRefresh()
+        {
+            Log.Information("Starting background refresh task");
+            Task.Run(async () =>
+            {
+                while (!this.IsDisposed)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(15));
+                    if (!this.IsDisposed)
+                    {
+                        await RefreshInBackground();
+                    }
+                }
+                Log.Information("Background refresh task ended");
+            });
+        }
+        // Event Handlers
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            Log.Information("Application is closing");
+        }
         private async void UpdateButton_Click(object sender, EventArgs e)
         {
             UpdateButton.Enabled = false;
@@ -161,7 +187,6 @@ namespace WVTApp
                 UpdateButton.Enabled = true;
             }
         }
-
         private void KeyAddButton_Click(object sender, EventArgs e)
         {
             try
@@ -204,7 +229,6 @@ namespace WVTApp
                 MessageBox.Show($"Error adding API key: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void KeyRemoveButton_Click(object sender, EventArgs e)
         {
             if (KeyListBox.SelectedItem is ApiKeyModel selectedKey)
@@ -218,27 +242,39 @@ namespace WVTApp
                 UpdateControlsEnabledState();
             }
         }
-
-        private void UpdateObjectivesGrid()
+        private void AccountCheckBox_CheckedChanged(object? sender, EventArgs e)
         {
-            if (this.InvokeRequired)
+            UpdateObjectivesGrid();
+        }
+        private void DailyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+
+        private void WeeklyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+
+        private void SpecialCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+
+        private void HideCompletedCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateObjectivesGrid();
+        }
+        private void ObjectivesDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
             {
-                this.Invoke(new Action(UpdateObjectivesGrid));
-                return;
-            }
+                int currentRowIndex = e.RowIndex;
+                var objective = (DisplayObjective)ObjectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
+                ToggleObjectiveCompletion(objective.Account, objective.Endpoint, objective.Title);
 
-            int currentRowIndex = ObjectivesDataGridView.CurrentRow?.Index ?? -1;
-
-            if (AccountsFlowLayoutPanel.Controls.Count > 0)
-            {
-                var selectedAccounts = GetSelectedAccounts();
-                var allObjectivesGrouped = GroupAllObjectives();
-                var filteredObjectives = FilterAndPrepareObjectives(allObjectivesGrouped, selectedAccounts);
-
-                ObjectivesDataGridView.DataSource = null;
-                ObjectivesDataGridView.DataSource = filteredObjectives;
-
-                if (currentRowIndex >= 0 && currentRowIndex < ObjectivesDataGridView.Rows.Count)
+                // Restore the selection after the grid has been updated
+                if (ObjectivesDataGridView.Rows.Count > currentRowIndex)
                 {
                     ObjectivesDataGridView.ClearSelection();
                     ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
@@ -246,80 +282,7 @@ namespace WVTApp
                 }
             }
         }
-
-        private List<string> GetSelectedAccounts()
-        {
-            return AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
-                .Where(chk => chk.Checked && chk.Tag is ApiKeyModel model && model.Name != null)
-                .Select(chk => ((ApiKeyModel)chk.Tag!).Name)
-                .ToList();
-        }
-
-        private List<GroupedObjective> GroupAllObjectives()
-        {
-            return _allObjectives
-                .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
-                .Select(g => new GroupedObjective
-                {
-                    Endpoint = g.Key.Item2,
-                    Track = g.Key.Track,
-                    Title = g.Key.Title,
-                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList()
-                })
-                .ToList();
-        }
-
-        private List<DisplayObjective> FilterAndPrepareObjectives(List<GroupedObjective> allObjectivesGrouped, List<string> selectedAccounts)
-        {
-            return allObjectivesGrouped
-                .Where(o => IsObjectiveTypeSelected(o.Endpoint))
-                .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
-                .SelectMany(o => o.Accounts.Where(a => selectedAccounts.Contains(a))
-                    .Select(a => new DisplayObjective
-                    {
-                        Account = a,
-                        Endpoint = o.Endpoint,
-                        Track = o.Track,
-                        Title = o.Title,
-                        Completed = IsLocallyCompleted(o.Endpoint, o.Title, a),
-                        Others = string.Join(", ", o.Accounts.Where(other => other != a))
-                    }))
-                .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
-                .ToList();
-        }
-
-        private bool IsObjectiveTypeSelected(string endpoint)
-        {
-            return (DailyCheckBox.Checked && endpoint == "daily") ||
-                   (WeeklyCheckBox.Checked && endpoint == "weekly") ||
-                   (SpecialCheckBox.Checked && endpoint == "special");
-        }
-        private bool IsLocallyCompleted(GroupedObjective objective, string account)
-        {
-            return _settings.LocalObjectiveStatuses.Any(s =>
-                s.AccountName == account &&
-                s.Endpoint == objective.Endpoint &&
-                s.Title == objective.Title &&
-                s.IsCompleted);
-        }
-        private bool IsLocallyCompleted(string endpoint, string title, string account)
-        {
-            return _settings.LocalObjectiveStatuses.Any(s =>
-                s.AccountName == account &&
-                s.Endpoint == endpoint &&
-                s.Title == title &&
-                s.IsCompleted);
-        }
-        private bool IsLocallyCompleted(GroupedObjective objective)
-        {
-            return _settings.LocalObjectiveStatuses.Any(s =>
-                objective.Accounts.Contains(s.AccountName) &&
-                s.Endpoint == objective.Endpoint &&
-                s.Title == objective.Title &&
-                s.IsCompleted);
-        }
-
-
+        // Objective Managment
         private async Task FetchAndUpdateObjectives()
         {
             if (_wvClient == null)
@@ -389,7 +352,6 @@ namespace WVTApp
                 toolStripStatusLabel.Text = "Update failed.";
             }
         }
-
         private async Task<(ApiKeyModel ApiKey, string Endpoint, List<ObjectiveModel>? Objectives, Exception? Exception)> FetchObjectivesForEndpoint(ApiKeyModel apiKey, string endpoint)
         {
             if (_wvClient == null)
@@ -415,24 +377,128 @@ namespace WVTApp
                 return (apiKey, endpoint, null, ex);
             }
         }
-
-        // Background refresh
-        private void StartBackgroundRefresh()
+        private void UpdateObjectivesGrid()
         {
-            Log.Information("Starting background refresh task");
-            Task.Run(async () =>
+            if (this.InvokeRequired)
             {
-                while (!this.IsDisposed)
+                this.Invoke(new Action(UpdateObjectivesGrid));
+                return;
+            }
+
+            int currentRowIndex = ObjectivesDataGridView.CurrentRow?.Index ?? -1;
+
+            if (AccountsFlowLayoutPanel.Controls.Count > 0)
+            {
+                var selectedAccounts = GetSelectedAccounts();
+                var allObjectivesGrouped = GroupAllObjectives();
+                var filteredObjectives = FilterAndPrepareObjectives(allObjectivesGrouped, selectedAccounts);
+
+                ObjectivesDataGridView.DataSource = null;
+                ObjectivesDataGridView.DataSource = filteredObjectives;
+
+                if (currentRowIndex >= 0 && currentRowIndex < ObjectivesDataGridView.Rows.Count)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(15));
-                    if (!this.IsDisposed)
-                    {
-                        await RefreshInBackground();
-                    }
+                    ObjectivesDataGridView.ClearSelection();
+                    ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
+                    ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
                 }
-                Log.Information("Background refresh task ended");
-            });
+            }
         }
+
+        private List<string> GetSelectedAccounts()
+        {
+            return AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
+                .Where(chk => chk.Checked && chk.Tag is ApiKeyModel model && model.Name != null)
+                .Select(chk => ((ApiKeyModel)chk.Tag!).Name)
+                .ToList();
+        }
+
+        private List<GroupedObjective> GroupAllObjectives()
+        {
+            return _allObjectives
+                .GroupBy(o => new { o.Item2, o.Item1.Track, o.Item1.Title })
+                .Select(g => new GroupedObjective
+                {
+                    Endpoint = g.Key.Item2,
+                    Track = g.Key.Track,
+                    Title = g.Key.Title,
+                    Accounts = g.Select(o => o.Item1.Account).Distinct().ToList()
+                })
+                .ToList();
+        }
+        private List<DisplayObjective> FilterAndPrepareObjectives(List<GroupedObjective> allObjectivesGrouped, List<string> selectedAccounts)
+        {
+            return allObjectivesGrouped
+                .Where(o => IsObjectiveTypeSelected(o.Endpoint))
+                .Where(o => o.Accounts.Any(a => selectedAccounts.Contains(a)))
+                .SelectMany(o => o.Accounts.Where(a => selectedAccounts.Contains(a))
+                    .Select(a => new DisplayObjective
+                    {
+                        Account = a,
+                        Endpoint = o.Endpoint,
+                        Track = o.Track,
+                        Title = o.Title,
+                        Completed = IsLocallyCompleted(o.Endpoint, o.Title, a),
+                        Others = string.Join(", ", o.Accounts.Where(other => other != a))
+                    }))
+                .Where(o => !hideCompletedCheckBox.Checked || !o.Completed)
+                .ToList();
+        }
+        private bool IsObjectiveTypeSelected(string endpoint)
+        {
+            return (DailyCheckBox.Checked && endpoint == "daily") ||
+                   (WeeklyCheckBox.Checked && endpoint == "weekly") ||
+                   (SpecialCheckBox.Checked && endpoint == "special");
+        }
+        private bool IsLocallyCompleted(GroupedObjective objective, string account)
+        {
+            return _settings.LocalObjectiveStatuses.Any(s =>
+                s.AccountName == account &&
+                s.Endpoint == objective.Endpoint &&
+                s.Title == objective.Title &&
+                s.IsCompleted);
+        }
+        private bool IsLocallyCompleted(string endpoint, string title, string account)
+        {
+            return _settings.LocalObjectiveStatuses.Any(s =>
+                s.AccountName == account &&
+                s.Endpoint == endpoint &&
+                s.Title == title &&
+                s.IsCompleted);
+        }
+        private bool IsLocallyCompleted(GroupedObjective objective)
+        {
+            return _settings.LocalObjectiveStatuses.Any(s =>
+                objective.Accounts.Contains(s.AccountName) &&
+                s.Endpoint == objective.Endpoint &&
+                s.Title == objective.Title &&
+                s.IsCompleted);
+        }
+        private void ToggleObjectiveCompletion(string account, string endpoint, string title)
+        {
+            var status = _settings.LocalObjectiveStatuses.FirstOrDefault(s =>
+                s.AccountName == account && s.Endpoint == endpoint && s.Title == title);
+
+            if (status == null)
+            {
+                status = new LocalObjectiveCompletionModel
+                {
+                    AccountName = account,
+                    Endpoint = endpoint,
+                    Title = title,
+                    IsCompleted = true
+                };
+                _settings.LocalObjectiveStatuses.Add(status);
+            }
+            else
+            {
+                status.IsCompleted = !status.IsCompleted;
+            }
+
+            _settings.Save();
+            UpdateObjectivesGrid();
+        }
+        // Background Refresh
         private async Task RefreshInBackground()
         {
             Log.Information("Starting background refresh cycle");
@@ -460,84 +526,6 @@ namespace WVTApp
                     // MessageBox.Show($"Background refresh failed: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 });
             }
-        }
-
-        private void UpdateControlsEnabledState()
-        {
-            bool hasKeys = KeyListBox.Items.Count > 0;
-
-            KeyRemoveButton.Enabled = hasKeys;
-            DailyCheckBox.Enabled = hasKeys;
-            WeeklyCheckBox.Enabled = hasKeys;
-            SpecialCheckBox.Enabled = hasKeys;
-            hideCompletedCheckBox.Enabled = hasKeys;
-            UpdateButton.Enabled = hasKeys;
-        }
-        private void ToggleObjectiveCompletion(string account, string endpoint, string title)
-        {
-            var status = _settings.LocalObjectiveStatuses.FirstOrDefault(s =>
-                s.AccountName == account && s.Endpoint == endpoint && s.Title == title);
-
-            if (status == null)
-            {
-                status = new LocalObjectiveCompletionModel
-                {
-                    AccountName = account,
-                    Endpoint = endpoint,
-                    Title = title,
-                    IsCompleted = true
-                };
-                _settings.LocalObjectiveStatuses.Add(status);
-            }
-            else
-            {
-                status.IsCompleted = !status.IsCompleted;
-            }
-
-            _settings.Save();
-            UpdateObjectivesGrid();
-        }
-        private void DailyCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateObjectivesGrid();
-        }
-
-        private void WeeklyCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateObjectivesGrid();
-        }
-
-        private void SpecialCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateObjectivesGrid();
-        }
-
-        private void HideCompletedCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateObjectivesGrid();
-        }
-
-        private void ObjectivesDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                int currentRowIndex = e.RowIndex;
-                var objective = (DisplayObjective)ObjectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
-                ToggleObjectiveCompletion(objective.Account, objective.Endpoint, objective.Title);
-
-                // Restore the selection after the grid has been updated
-                if (ObjectivesDataGridView.Rows.Count > currentRowIndex)
-                {
-                    ObjectivesDataGridView.ClearSelection();
-                    ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
-                    ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
-                }
-            }
-        }
-
-        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
-        {
-            Log.Information("Application is closing");
         }
     }
 }
