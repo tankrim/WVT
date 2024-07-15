@@ -312,6 +312,8 @@ namespace WVTApp
                 s.Title == objective.Title &&
                 s.IsCompleted);
         }
+
+        
         private async Task FetchAndUpdateObjectives()
         {
             if (_wvClient == null)
@@ -319,6 +321,9 @@ namespace WVTApp
                 MessageBox.Show("WVClient is not initialized.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            string[] sourceArray = ["daily", "weekly", "special"];
+
             try
             {
                 await this.InvokeAsync(() => toolStripStatusLabel.Text = "Updating objectives...");
@@ -393,8 +398,6 @@ namespace WVTApp
                 return (apiKey, endpoint, null, ex);
             }
         }
-
-        private static readonly string[] sourceArray = ["daily", "weekly", "special"];
 
         // Background refresh
         private void StartBackgroundRefresh()
