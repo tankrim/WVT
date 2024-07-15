@@ -1,6 +1,4 @@
-﻿using System;
-using Xunit;
-using FluentAssertions;
+﻿using FluentAssertions;
 using WVTLib;
 
 namespace TestWVT.WVTLib

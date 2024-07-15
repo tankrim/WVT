@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using WVTLib.Models;
-using WVTLib;
-using WVTLib.Models;
 
 namespace WVTLib
 {
