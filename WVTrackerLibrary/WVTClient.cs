@@ -1,4 +1,7 @@
-﻿using Serilog;
+﻿using Polly;
+using Polly.Retry;
+using Serilog;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using WVTLib.Models;
@@ -10,13 +13,26 @@ namespace WVTLib
         private readonly HttpClient _httpClient;
         private readonly List<string> _endpoints;
         private readonly ILogger _logger;
+        private readonly AsyncRetryPolicy<HttpResponseMessage> _retryPolicy;
 
-        public WVTClient(HttpClient httpClient, string baseUrl, List<string> endpoints)
+        public WVTClient(HttpClient httpClient, string baseUrl, List<string> endpoints, ILogger logger)
         {
             _httpClient = httpClient;
             _httpClient.BaseAddress = new Uri(baseUrl);
             _endpoints = endpoints;
-            _logger = Log.ForContext<WVTClient>();
+            _logger = logger.ForContext<WVTClient>();
+
+            _retryPolicy = Policy<HttpResponseMessage>
+                .Handle<HttpRequestException>()
+                .OrResult(msg => msg.StatusCode == HttpStatusCode.RequestTimeout)
+                .WaitAndRetryAsync(
+                    3,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (outcome, timespan, retryCount, context) =>
+                    {
+                        _logger.Warning("Request failed. Waiting {TimeSpan} before retry. Retry attempt {RetryCount}", timespan, retryCount);
+                    }
+                );
         }
 
         public async Task<List<ObjectiveModel>> GetObjectivesAsync(ApiKeyModel apiKey, string endpoint)
@@ -33,9 +49,9 @@ namespace WVTLib
 
             try
             {
-                var response = await _httpClient.GetAsync(endpoint);
+                var response = await _retryPolicy.ExecuteAsync(async () => await _httpClient.GetAsync(endpoint));
 
-                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     _logger.Warning("Unauthorized access attempt for API key {KeyName}", apiKey.Name);
                     throw new UnauthorizedAccessException($"API key '{apiKey.Name}' is invalid or unauthorized.");
@@ -51,7 +67,7 @@ namespace WVTLib
             }
             catch (HttpRequestException ex)
             {
-                _logger.Error(ex, "HTTP request failed for endpoint {Endpoint}", endpoint);
+                _logger.Error(ex, "HTTP request failed for endpoint {Endpoint} after retries", endpoint);
                 throw;
             }
             catch (Exception ex) when (ex is not UnauthorizedAccessException)

@@ -30,7 +30,9 @@ namespace WVTLib
                 ApplicationConfiguration.Initialize();
 
                 Log.Information("WVT Started");
-                Application.Run(new MainForm());
+                var mainForm = new MainForm(Log.Logger);
+
+                Application.Run(mainForm);
             }
             catch (Exception ex)
             {

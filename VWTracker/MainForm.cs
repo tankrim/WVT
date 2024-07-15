@@ -12,9 +12,11 @@ namespace WVTLib
         private WVTClient? _wvClient;
         private readonly AppSettings _settings;
         private readonly List<(ObjectiveModel, string)> _allObjectives = [];
+        private readonly ILogger _logger;
 
-        public MainForm()
+        public MainForm(ILogger logger)
         {
+            _logger = logger;
             Log.Information("Application is starting");
             InitializeComponent();
             InitializeWVClient();
@@ -33,7 +35,7 @@ namespace WVTLib
             string baseUrl = "https://api.guildwars2.com/v2/account/wizardsvault/";
             List<string> endpoints = ["daily", "weekly", "special"];
             var httpClient = new HttpClient();
-            _wvClient = new WVTClient(httpClient, baseUrl, endpoints);
+            _wvClient = new WVTClient(httpClient, baseUrl, endpoints, _logger);
         }
 
         private void LoadApiKeys()
