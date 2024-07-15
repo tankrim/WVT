@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WVTApp.Models;
+using WVTLib.Models;
 
-namespace TestWVT.WVTApp
+namespace WVTTests.WVTLib
 {
     public class GroupedObjectiveTests
     {

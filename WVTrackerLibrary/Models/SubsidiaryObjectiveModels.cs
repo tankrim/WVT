@@ -1,4 +1,4 @@
-﻿namespace WVTApp.Models
+﻿namespace WVTLib.Models
 {
     public class GroupedObjective : IEquatable<GroupedObjective>
     {

@@ -1,4 +1,4 @@
-﻿namespace WVTApp
+﻿namespace WVTLib
 {
     partial class MainForm
     {

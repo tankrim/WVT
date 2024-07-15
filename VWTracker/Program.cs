@@ -1,5 +1,5 @@
 using Serilog;
-namespace WVTApp
+namespace WVTLib
 {
     static class Program
     {

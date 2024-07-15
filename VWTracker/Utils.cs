@@ -1,4 +1,4 @@
-﻿namespace WVTApp
+﻿namespace WVTLib
 {
     public static class ControlExtensions
     {

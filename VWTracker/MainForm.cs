@@ -2,11 +2,11 @@
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using WVTApp.Models;
+using WVTLib.Models;
 using WVTLib;
 using WVTLib.Models;
 
-namespace WVTApp
+namespace WVTLib
 {
     public partial class MainForm : Form
     {

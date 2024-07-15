@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using WVTLib.Models;
 
-namespace TestWVT.WVTApp
+namespace WVTTests.WVTLib
 {
     public class ObjectiveModelTests
     {
