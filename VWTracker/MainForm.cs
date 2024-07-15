@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Threading;
 using WVTLib.Models;
 
 namespace WVTLib
@@ -13,6 +14,8 @@ namespace WVTLib
         private readonly AppSettings _settings;
         private readonly List<(ObjectiveModel, string)> _allObjectives = [];
         private readonly ILogger _logger;
+        private CancellationTokenSource? _cts;
+        private readonly TimeSpan _refreshRequestTimeout = TimeSpan.FromMinutes(2);
 
         public MainForm(ILogger logger)
         {
@@ -35,7 +38,8 @@ namespace WVTLib
             string baseUrl = "https://api.guildwars2.com/v2/account/wizardsvault/";
             List<string> endpoints = ["daily", "weekly", "special"];
             var httpClient = new HttpClient();
-            _wvClient = new WVTClient(httpClient, baseUrl, endpoints, _logger);
+            TimeSpan requestTimeout = TimeSpan.FromSeconds(10);  // Timeout for individual requests in SECONDS
+            _wvClient = new WVTClient(httpClient, baseUrl, endpoints, _logger, requestTimeout);
         }
 
         private void LoadApiKeys()
@@ -177,15 +181,36 @@ namespace WVTLib
         private async void UpdateButton_Click(object sender, EventArgs e)
         {
             updateButton.Enabled = false;
+            stopUpdateButton.Enabled = true;
             toolStripStatusLabel.Text = "Starting update...";
+
+            _cts = new CancellationTokenSource();
+
             try
             {
-                await FetchAndUpdateObjectives();
+                await FetchAndUpdateObjectives(_cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.Information("Update operation was cancelled by user");
+                toolStripStatusLabel.Text = "Update cancelled.";
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error during update operation");
+                toolStripStatusLabel.Text = "Update failed.";
             }
             finally
             {
                 updateButton.Enabled = true;
+                stopUpdateButton.Enabled = false;
             }
+        }
+        private void stopUpdateButton_Click(object sender, EventArgs e)
+        {
+            _cts?.Cancel();
+            toolStripStatusLabel.Text = "Cancelling update...";
+            _logger.Information("User requested to stop the update");
         }
         private void KeyAddButton_Click(object sender, EventArgs e)
         {
@@ -283,7 +308,7 @@ namespace WVTLib
             }
         }
         // Objective Managment
-        private async Task FetchAndUpdateObjectives()
+        private async Task FetchAndUpdateObjectives(CancellationToken cancellationToken)
         {
             if (_wvClient == null)
             {
@@ -301,7 +326,8 @@ namespace WVTLib
                 _allObjectives.Clear();
                 var fetchTasks = _settings.ApiKeys
                     .Where(k => k.IsValid)
-                    .SelectMany(apiKey => sourceArray.Select(endpoint => FetchObjectivesForEndpoint(apiKey, endpoint)))
+                    .SelectMany(apiKey => sourceArray.Select(endpoint =>
+                        FetchObjectivesForEndpoint(apiKey, endpoint, cancellationToken)))
                     .ToList();
 
                 var results = await Task.WhenAll(fetchTasks);
@@ -352,7 +378,8 @@ namespace WVTLib
                 toolStripStatusLabel.Text = "Update failed.";
             }
         }
-        private async Task<(ApiKeyModel ApiKey, string Endpoint, List<ObjectiveModel>? Objectives, Exception? Exception)> FetchObjectivesForEndpoint(ApiKeyModel apiKey, string endpoint)
+        private async Task<(ApiKeyModel ApiKey, string Endpoint, List<ObjectiveModel>? Objectives, Exception? Exception)>
+            FetchObjectivesForEndpoint(ApiKeyModel apiKey, string endpoint, CancellationToken cancellationToken)
         {
             if (_wvClient == null)
             {
@@ -362,7 +389,7 @@ namespace WVTLib
             try
             {
                 Log.Debug("Fetching objectives for endpoint {Endpoint} with API key {KeyName}", endpoint, apiKey.Name);
-                var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint);
+                var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint, cancellationToken);
                 Log.Debug("Successfully fetched {Count} objectives for endpoint {Endpoint}", objectives.Count, endpoint);
                 return (apiKey, endpoint, objectives, null);
             }
@@ -504,15 +531,40 @@ namespace WVTLib
             Log.Information("Starting background refresh cycle");
             try
             {
-                await FetchAndUpdateObjectives();
+                using var operationCts = new CancellationTokenSource(TimeSpan.FromMinutes(15));
 
-                // Marshal all UI updates back to the UI thread
-                await this.InvokeAsync(() =>
+                var refreshTask = FetchAndUpdateObjectives(operationCts.Token);
+
+                // Wait for the refresh to complete or for the timeout to occur
+                if (await Task.WhenAny(refreshTask, Task.Delay(_refreshRequestTimeout, operationCts.Token)) == refreshTask)
                 {
-                    UpdateObjectivesGrid();
-                    toolStripStatusLabel.Text = "Background refresh completed.";
-                });
-                Log.Information("Background refresh cycle completed successfully");
+                    // Task completed within timeout
+                    await refreshTask;
+
+                    // Keep your existing UI update logic
+                    await this.InvokeAsync(() =>
+                    {
+                        UpdateObjectivesGrid();
+                        toolStripStatusLabel.Text = "Background refresh completed.";
+                    });
+                    Log.Information("Background refresh cycle completed successfully");
+                }
+                else
+                {
+                    // Timeout occurred
+                    operationCts.Cancel();
+                    throw new TimeoutException("Background refresh timed out after 15 minutes.");
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Information("Background refresh was cancelled");
+                await this.InvokeAsync(() => toolStripStatusLabel.Text = "Background refresh cancelled.");
+            }
+            catch (TimeoutException ex)
+            {
+                Log.Warning(ex, "Background refresh timed out");
+                await this.InvokeAsync(() => toolStripStatusLabel.Text = "Background refresh timed out.");
             }
             catch (Exception ex)
             {

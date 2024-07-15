@@ -14,6 +14,7 @@ namespace TestWVT.WVTLib
         private readonly HttpClient _httpClient;
         private readonly WVTClient _client;
         private readonly Mock<ILogger> _mockLogger;
+        private readonly TimeSpan _testTimeout = TimeSpan.FromSeconds(10);
 
         public WVTClientTests()
         {
@@ -21,7 +22,8 @@ namespace TestWVT.WVTLib
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
             _mockLogger = new Mock<ILogger>();
             _mockLogger.Setup(x => x.ForContext<It.IsAnyType>()).Returns(_mockLogger.Object);
-            _client = new WVTClient(_httpClient, "https://api.example.com/v2/account/wizardsvault/", new List<string> { "daily", "weekly", "special" }, _mockLogger.Object);
+            _client = new WVTClient(_httpClient, "https://api.example.com/v2/account/wizardsvault/",
+                new List<string> { "daily", "weekly", "special" }, _mockLogger.Object, _testTimeout);
         }
 
         [Fact]
@@ -38,7 +40,7 @@ namespace TestWVT.WVTLib
             SetupMockHttpMessageHandler(HttpStatusCode.OK, jsonResponse);
 
             // Act
-            var result = await _client.GetObjectivesAsync(apiKey, "daily");
+            var result = await _client.GetObjectivesAsync(apiKey, "daily", CancellationToken.None);
 
             // Assert
             result.Should().HaveCount(2);
@@ -55,7 +57,7 @@ namespace TestWVT.WVTLib
             var apiKey = new ApiKeyModel("TestKey", "test-token");
 
             // Act & Assert
-            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "invalid"))
+            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "invalid", CancellationToken.None))
                 .Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Invalid endpoint: invalid*");
         }
@@ -68,7 +70,7 @@ namespace TestWVT.WVTLib
             SetupMockHttpMessageHandler(HttpStatusCode.Unauthorized, "");
 
             // Act & Assert
-            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "daily"))
+            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "daily", CancellationToken.None))
                 .Should().ThrowAsync<UnauthorizedAccessException>()
                 .WithMessage("API key 'TestKey' is invalid or unauthorized.");
         }
@@ -79,10 +81,10 @@ namespace TestWVT.WVTLib
             // Arrange
             var apiKey = new ApiKeyModel("TestKey", "test-token");
             var jsonResponse = @"{
-        ""objectives"": [
-            {""title"": ""Objective 1"", ""track"": ""Track 1""}
-        ]
-    }";
+                ""objectives"": [
+                    {""title"": ""Objective 1"", ""track"": ""Track 1""}
+                ]
+            }";
 
             var callCount = 0;
             _mockHttpMessageHandler
@@ -102,7 +104,7 @@ namespace TestWVT.WVTLib
                 });
 
             // Act
-            var result = await _client.GetObjectivesAsync(apiKey, "daily");
+            var result = await _client.GetObjectivesAsync(apiKey, "daily", CancellationToken.None);
 
             // Assert
             result.Should().HaveCount(1);
@@ -119,6 +121,54 @@ namespace TestWVT.WVTLib
             );
 
             callCount.Should().Be(3);
+        }
+
+        [Fact]
+        public async Task GetObjectivesAsync_Cancellation_ThrowsOperationCanceledException()
+        {
+            // Arrange
+            var apiKey = new ApiKeyModel("TestKey", "test-token");
+            var cts = new CancellationTokenSource();
+
+            _mockHttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(() => {
+                    cts.Cancel();
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                });
+
+            // Act & Assert
+            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "daily", cts.Token))
+                .Should().ThrowAsync<OperationCanceledException>();
+        }
+        [Fact]
+        public async Task GetObjectivesAsync_Timeout_ThrowsTimeoutException()
+        {
+            // Arrange
+            var apiKey = new ApiKeyModel("TestKey", "test-token");
+
+            _mockHttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .Returns<HttpRequestMessage, CancellationToken>((request, cancellationToken) =>
+                {
+                    // Create a task that will not complete within the timeout period
+                    return Task.Delay(Timeout.Infinite, cancellationToken)
+                        .ContinueWith(t => new HttpResponseMessage(HttpStatusCode.OK), TaskContinuationOptions.OnlyOnCanceled);
+                });
+
+            // Act & Assert
+            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "daily", CancellationToken.None))
+                .Should().ThrowAsync<TimeoutException>();
         }
 
         private void SetupMockHttpMessageHandler(HttpStatusCode statusCode, string content)

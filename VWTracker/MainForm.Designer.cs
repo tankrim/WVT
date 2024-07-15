@@ -15,6 +15,7 @@
         {
             if (disposing && (components != null))
             {
+                _cts?.Dispose();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -47,6 +48,7 @@
             statusStrip = new StatusStrip();
             toolStripStatusLabel = new ToolStripStatusLabel();
             hideCompletedCheckBox = new CheckBox();
+            stopUpdateButton = new Button();
             keysGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)objectivesDataGridView).BeginInit();
             statusStrip.SuspendLayout();
@@ -153,7 +155,7 @@
             dailyCheckBox.Checked = true;
             dailyCheckBox.CheckState = CheckState.Checked;
             dailyCheckBox.Enabled = false;
-            dailyCheckBox.Location = new Point(566, 287);
+            dailyCheckBox.Location = new Point(566, 230);
             dailyCheckBox.Margin = new Padding(5);
             dailyCheckBox.Name = "dailyCheckBox";
             dailyCheckBox.Size = new Size(73, 29);
@@ -168,7 +170,7 @@
             weeklyCheckBox.Checked = true;
             weeklyCheckBox.CheckState = CheckState.Checked;
             weeklyCheckBox.Enabled = false;
-            weeklyCheckBox.Location = new Point(669, 287);
+            weeklyCheckBox.Location = new Point(660, 230);
             weeklyCheckBox.Margin = new Padding(5);
             weeklyCheckBox.Name = "weeklyCheckBox";
             weeklyCheckBox.Size = new Size(91, 29);
@@ -183,7 +185,7 @@
             specialCheckBox.Checked = true;
             specialCheckBox.CheckState = CheckState.Checked;
             specialCheckBox.Enabled = false;
-            specialCheckBox.Location = new Point(789, 287);
+            specialCheckBox.Location = new Point(772, 230);
             specialCheckBox.Margin = new Padding(5);
             specialCheckBox.Name = "specialCheckBox";
             specialCheckBox.Size = new Size(91, 29);
@@ -194,7 +196,7 @@
             // 
             // accountsFlowLayoutPanel
             // 
-            accountsFlowLayoutPanel.Location = new Point(566, 202);
+            accountsFlowLayoutPanel.Location = new Point(566, 145);
             accountsFlowLayoutPanel.Margin = new Padding(5);
             accountsFlowLayoutPanel.Name = "accountsFlowLayoutPanel";
             accountsFlowLayoutPanel.Size = new Size(487, 75);
@@ -204,7 +206,7 @@
             // 
             updateButton.Enabled = false;
             updateButton.Font = new Font("Segoe UI", 16F);
-            updateButton.Location = new Point(954, 282);
+            updateButton.Location = new Point(887, 279);
             updateButton.Margin = new Padding(5);
             updateButton.Name = "updateButton";
             updateButton.Size = new Size(118, 38);
@@ -255,7 +257,7 @@
             // 
             hideCompletedCheckBox.AutoSize = true;
             hideCompletedCheckBox.Enabled = false;
-            hideCompletedCheckBox.Location = new Point(886, 145);
+            hideCompletedCheckBox.Location = new Point(884, 230);
             hideCompletedCheckBox.Margin = new Padding(5);
             hideCompletedCheckBox.Name = "hideCompletedCheckBox";
             hideCompletedCheckBox.Size = new Size(167, 29);
@@ -264,11 +266,26 @@
             hideCompletedCheckBox.UseVisualStyleBackColor = true;
             hideCompletedCheckBox.CheckedChanged += HideCompletedCheckBox_CheckedChanged;
             // 
+            // stopUpdateButton
+            // 
+            stopUpdateButton.BackColor = SystemColors.Control;
+            stopUpdateButton.Enabled = false;
+            stopUpdateButton.FlatAppearance.BorderSize = 0;
+            stopUpdateButton.FlatStyle = FlatStyle.Flat;
+            stopUpdateButton.Image = (Image)resources.GetObject("stopUpdateButton.Image");
+            stopUpdateButton.Location = new Point(1006, 274);
+            stopUpdateButton.Name = "stopUpdateButton";
+            stopUpdateButton.Size = new Size(75, 48);
+            stopUpdateButton.TabIndex = 10;
+            stopUpdateButton.UseVisualStyleBackColor = false;
+            stopUpdateButton.Click += stopUpdateButton_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1107, 959);
+            Controls.Add(stopUpdateButton);
             Controls.Add(hideCompletedCheckBox);
             Controls.Add(statusStrip);
             Controls.Add(titleLabel);
@@ -314,5 +331,6 @@
         private StatusStrip statusStrip;
         private ToolStripStatusLabel toolStripStatusLabel;
         private CheckBox hideCompletedCheckBox;
+        private Button stopUpdateButton;
     }
 }
