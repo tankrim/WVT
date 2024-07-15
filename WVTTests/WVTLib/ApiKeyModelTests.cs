@@ -3,7 +3,7 @@ using System.Text.Json;
 using WVTLib;
 using WVTLib.Models;
 
-namespace WVTTests
+namespace TestWVT.WVTLib
 {
     public class ApiKeyModelTests
     {

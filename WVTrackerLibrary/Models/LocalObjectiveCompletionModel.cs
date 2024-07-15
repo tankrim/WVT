@@ -1,5 +1,4 @@
-﻿using System;
-namespace WVTLib.Models
+﻿namespace WVTLib.Models
 {
     [Serializable]
     public class LocalObjectiveCompletionModel : IEquatable<LocalObjectiveCompletionModel>

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WVTApp.Models;
 
-namespace WVTTests
+namespace TestWVT.WVTApp
 {
     public class GroupedObjectiveTests
     {

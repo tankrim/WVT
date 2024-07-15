@@ -3,7 +3,7 @@ using Xunit;
 using FluentAssertions;
 using WVTLib;
 
-namespace WVTTests
+namespace TestWVT.WVTLib
 {
     public class EncryptionHelperTests
     {
@@ -87,5 +87,5 @@ namespace WVTTests
 
             decrypted.Should().Be(original);
         }
-    } 
+    }
 }

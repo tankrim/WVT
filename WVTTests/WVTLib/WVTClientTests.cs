@@ -5,7 +5,7 @@ using System.Net;
 using WVTLib;
 using WVTLib.Models;
 
-namespace WVTTests
+namespace TestWVT.WVTLib
 {
     public class WVTClientTests
     {

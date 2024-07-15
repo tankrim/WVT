@@ -2,7 +2,7 @@ using FluentAssertions;
 using WVTLib;
 using WVTLib.Models;
 
-namespace WVTTests
+namespace TestWVT.WVTLib
 {
     public class AppSettingsTests
     {
