@@ -9,10 +9,10 @@ namespace WVTLib
         private readonly HttpClient _httpClient;
         private readonly List<string> _endpoints;
 
-
-        public WVTClient(string baseUrl, List<string> endpoints)
+        public WVTClient(HttpClient httpClient, string baseUrl, List<string> endpoints)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
+            _httpClient = httpClient;
+            _httpClient.BaseAddress = new Uri(baseUrl);
             _endpoints = endpoints;
         }
 
@@ -24,7 +24,6 @@ namespace WVTLib
             }
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey.Token);
-
             var response = await _httpClient.GetAsync(endpoint);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -33,7 +32,6 @@ namespace WVTLib
             }
 
             response.EnsureSuccessStatusCode();
-
             var content = await response.Content.ReadAsStringAsync();
             var objectives = ParseObjectives(content, apiKey);
             return objectives;
@@ -46,7 +44,6 @@ namespace WVTLib
                 using var doc = JsonDocument.Parse(content);
                 var root = doc.RootElement;
                 var objectivesArray = root.GetProperty("objectives");
-
                 var objectives = new List<ObjectiveModel>();
                 foreach (var obj in objectivesArray.EnumerateArray())
                 {

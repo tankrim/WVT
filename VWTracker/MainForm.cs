@@ -35,7 +35,8 @@ namespace WVTApp
         {
             string baseUrl = "https://api.guildwars2.com/v2/account/wizardsvault/";
             List<string> endpoints = ["daily", "weekly", "special"];
-            _wvClient = new WVTClient(baseUrl, endpoints);
+            var httpClient = new HttpClient();
+            _wvClient = new WVTClient(httpClient, baseUrl, endpoints);
         }
 
         private void LoadApiKeys()
