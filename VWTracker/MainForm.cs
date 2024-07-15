@@ -17,8 +17,10 @@ namespace WVTApp
 
         public MainForm()
         {
+            Log.Information("Application is starting");
             InitializeComponent();
             InitializeWVClient();
+            this.FormClosing += MainForm_FormClosing;
             _settings = new AppSettings();
             _settings.ReloadSettings();
             LoadApiKeys();
@@ -317,7 +319,7 @@ namespace WVTApp
                 s.IsCompleted);
         }
 
-        
+
         private async Task FetchAndUpdateObjectives()
         {
             if (_wvClient == null)
@@ -330,6 +332,7 @@ namespace WVTApp
 
             try
             {
+                var stopwatch = Stopwatch.StartNew();
                 Log.Information("Starting objectives update");
                 await this.InvokeAsync(() => toolStripStatusLabel.Text = "Updating objectives...");
                 _allObjectives.Clear();
@@ -372,6 +375,8 @@ namespace WVTApp
                                         "Invalid API Key(s)", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
 
+                    stopwatch.Stop();
+                    Log.Information("Operation {OperationName} completed in {ElapsedMilliseconds}ms", "UpdateObjectives", stopwatch.ElapsedMilliseconds);
                     Log.Information("Objectives update completed");
                     UpdateObjectivesGrid();
                     toolStripStatusLabel.Text = "Update completed.";
@@ -528,6 +533,11 @@ namespace WVTApp
                     ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
                 }
             }
+        }
+
+        private void MainForm_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            Log.Information("Application is closing");
         }
     }
 }

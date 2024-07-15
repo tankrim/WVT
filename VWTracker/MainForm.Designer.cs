@@ -284,6 +284,7 @@
             Margin = new Padding(5);
             Name = "MainForm";
             Text = "WVT";
+            FormClosing += MainForm_FormClosing;
             KeysGroupBox.ResumeLayout(false);
             KeysGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).EndInit();
