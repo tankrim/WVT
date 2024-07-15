@@ -29,201 +29,201 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            KeysGroupBox = new GroupBox();
-            KeyRemoveButton = new Button();
-            KeyListBox = new ListBox();
-            NameTextBox = new TextBox();
-            NameLabel = new Label();
-            KeyAddButton = new Button();
-            KeyTextBox = new TextBox();
-            KeyLabel = new Label();
-            DailyCheckBox = new CheckBox();
-            WeeklyCheckBox = new CheckBox();
-            SpecialCheckBox = new CheckBox();
-            AccountsFlowLayoutPanel = new FlowLayoutPanel();
-            UpdateButton = new Button();
-            ObjectivesDataGridView = new DataGridView();
+            keysGroupBox = new GroupBox();
+            keyRemoveButton = new Button();
+            keyListBox = new ListBox();
+            nameTextBox = new TextBox();
+            nameLabel = new Label();
+            keyAddButton = new Button();
+            keyTextBox = new TextBox();
+            keyLabel = new Label();
+            dailyCheckBox = new CheckBox();
+            weeklyCheckBox = new CheckBox();
+            specialCheckBox = new CheckBox();
+            accountsFlowLayoutPanel = new FlowLayoutPanel();
+            updateButton = new Button();
+            objectivesDataGridView = new DataGridView();
             titleLabel = new Label();
             statusStrip = new StatusStrip();
             toolStripStatusLabel = new ToolStripStatusLabel();
             hideCompletedCheckBox = new CheckBox();
-            KeysGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).BeginInit();
+            keysGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)objectivesDataGridView).BeginInit();
             statusStrip.SuspendLayout();
             SuspendLayout();
             // 
-            // KeysGroupBox
+            // keysGroupBox
             // 
-            KeysGroupBox.Controls.Add(KeyRemoveButton);
-            KeysGroupBox.Controls.Add(KeyListBox);
-            KeysGroupBox.Controls.Add(NameTextBox);
-            KeysGroupBox.Controls.Add(NameLabel);
-            KeysGroupBox.Controls.Add(KeyAddButton);
-            KeysGroupBox.Controls.Add(KeyTextBox);
-            KeysGroupBox.Controls.Add(KeyLabel);
-            KeysGroupBox.Font = new Font("Segoe UI", 16F);
-            KeysGroupBox.Location = new Point(38, 35);
-            KeysGroupBox.Margin = new Padding(5);
-            KeysGroupBox.Name = "KeysGroupBox";
-            KeysGroupBox.Padding = new Padding(5);
-            KeysGroupBox.Size = new Size(475, 283);
-            KeysGroupBox.TabIndex = 0;
-            KeysGroupBox.TabStop = false;
-            KeysGroupBox.Text = "Key Managment";
+            keysGroupBox.Controls.Add(keyRemoveButton);
+            keysGroupBox.Controls.Add(keyListBox);
+            keysGroupBox.Controls.Add(nameTextBox);
+            keysGroupBox.Controls.Add(nameLabel);
+            keysGroupBox.Controls.Add(keyAddButton);
+            keysGroupBox.Controls.Add(keyTextBox);
+            keysGroupBox.Controls.Add(keyLabel);
+            keysGroupBox.Font = new Font("Segoe UI", 16F);
+            keysGroupBox.Location = new Point(38, 35);
+            keysGroupBox.Margin = new Padding(5);
+            keysGroupBox.Name = "keysGroupBox";
+            keysGroupBox.Padding = new Padding(5);
+            keysGroupBox.Size = new Size(475, 283);
+            keysGroupBox.TabIndex = 0;
+            keysGroupBox.TabStop = false;
+            keysGroupBox.Text = "Key Managment";
             // 
-            // KeyRemoveButton
+            // keyRemoveButton
             // 
-            KeyRemoveButton.Enabled = false;
-            KeyRemoveButton.Font = new Font("Segoe UI", 14F);
-            KeyRemoveButton.Location = new Point(215, 226);
-            KeyRemoveButton.Margin = new Padding(5);
-            KeyRemoveButton.Name = "KeyRemoveButton";
-            KeyRemoveButton.Size = new Size(197, 38);
-            KeyRemoveButton.TabIndex = 6;
-            KeyRemoveButton.Text = "Remove Selected Key";
-            KeyRemoveButton.UseVisualStyleBackColor = true;
-            KeyRemoveButton.Click += KeyRemoveButton_Click;
+            keyRemoveButton.Enabled = false;
+            keyRemoveButton.Font = new Font("Segoe UI", 14F);
+            keyRemoveButton.Location = new Point(215, 226);
+            keyRemoveButton.Margin = new Padding(5);
+            keyRemoveButton.Name = "keyRemoveButton";
+            keyRemoveButton.Size = new Size(197, 38);
+            keyRemoveButton.TabIndex = 6;
+            keyRemoveButton.Text = "Remove Selected Key";
+            keyRemoveButton.UseVisualStyleBackColor = true;
+            keyRemoveButton.Click += KeyRemoveButton_Click;
             // 
-            // KeyListBox
+            // keyListBox
             // 
-            KeyListBox.Font = new Font("Segoe UI", 14F);
-            KeyListBox.FormattingEnabled = true;
-            KeyListBox.ItemHeight = 25;
-            KeyListBox.Location = new Point(9, 110);
-            KeyListBox.Margin = new Padding(5);
-            KeyListBox.Name = "KeyListBox";
-            KeyListBox.Size = new Size(186, 154);
-            KeyListBox.TabIndex = 5;
+            keyListBox.Font = new Font("Segoe UI", 14F);
+            keyListBox.FormattingEnabled = true;
+            keyListBox.ItemHeight = 25;
+            keyListBox.Location = new Point(9, 110);
+            keyListBox.Margin = new Padding(5);
+            keyListBox.Name = "keyListBox";
+            keyListBox.Size = new Size(186, 154);
+            keyListBox.TabIndex = 5;
             // 
-            // NameTextBox
+            // nameTextBox
             // 
-            NameTextBox.Font = new Font("Segoe UI", 14F);
-            NameTextBox.Location = new Point(176, 62);
-            NameTextBox.Margin = new Padding(5);
-            NameTextBox.Name = "NameTextBox";
-            NameTextBox.Size = new Size(155, 32);
-            NameTextBox.TabIndex = 4;
+            nameTextBox.Font = new Font("Segoe UI", 14F);
+            nameTextBox.Location = new Point(176, 62);
+            nameTextBox.Margin = new Padding(5);
+            nameTextBox.Name = "nameTextBox";
+            nameTextBox.Size = new Size(155, 32);
+            nameTextBox.TabIndex = 4;
             // 
-            // NameLabel
+            // nameLabel
             // 
-            NameLabel.AutoSize = true;
-            NameLabel.Font = new Font("Segoe UI", 14F);
-            NameLabel.Location = new Point(176, 32);
-            NameLabel.Margin = new Padding(5, 0, 5, 0);
-            NameLabel.Name = "NameLabel";
-            NameLabel.Size = new Size(62, 25);
-            NameLabel.TabIndex = 3;
-            NameLabel.Text = "Name";
+            nameLabel.AutoSize = true;
+            nameLabel.Font = new Font("Segoe UI", 14F);
+            nameLabel.Location = new Point(176, 32);
+            nameLabel.Margin = new Padding(5, 0, 5, 0);
+            nameLabel.Name = "nameLabel";
+            nameLabel.Size = new Size(62, 25);
+            nameLabel.TabIndex = 3;
+            nameLabel.Text = "Name";
             // 
-            // KeyAddButton
+            // keyAddButton
             // 
-            KeyAddButton.Font = new Font("Segoe UI", 14F);
-            KeyAddButton.Location = new Point(347, 59);
-            KeyAddButton.Margin = new Padding(5);
-            KeyAddButton.Name = "KeyAddButton";
-            KeyAddButton.Size = new Size(118, 38);
-            KeyAddButton.TabIndex = 2;
-            KeyAddButton.Text = "Add Key";
-            KeyAddButton.UseVisualStyleBackColor = true;
-            KeyAddButton.Click += KeyAddButton_Click;
+            keyAddButton.Font = new Font("Segoe UI", 14F);
+            keyAddButton.Location = new Point(347, 59);
+            keyAddButton.Margin = new Padding(5);
+            keyAddButton.Name = "keyAddButton";
+            keyAddButton.Size = new Size(118, 38);
+            keyAddButton.TabIndex = 2;
+            keyAddButton.Text = "Add Key";
+            keyAddButton.UseVisualStyleBackColor = true;
+            keyAddButton.Click += KeyAddButton_Click;
             // 
-            // KeyTextBox
+            // keyTextBox
             // 
-            KeyTextBox.Font = new Font("Segoe UI", 14F);
-            KeyTextBox.Location = new Point(9, 62);
-            KeyTextBox.Margin = new Padding(5);
-            KeyTextBox.Name = "KeyTextBox";
-            KeyTextBox.Size = new Size(155, 32);
-            KeyTextBox.TabIndex = 1;
+            keyTextBox.Font = new Font("Segoe UI", 14F);
+            keyTextBox.Location = new Point(9, 62);
+            keyTextBox.Margin = new Padding(5);
+            keyTextBox.Name = "keyTextBox";
+            keyTextBox.Size = new Size(155, 32);
+            keyTextBox.TabIndex = 1;
             // 
-            // KeyLabel
+            // keyLabel
             // 
-            KeyLabel.AutoSize = true;
-            KeyLabel.Font = new Font("Segoe UI", 14F);
-            KeyLabel.Location = new Point(9, 32);
-            KeyLabel.Margin = new Padding(5, 0, 5, 0);
-            KeyLabel.Name = "KeyLabel";
-            KeyLabel.Size = new Size(118, 25);
-            KeyLabel.TabIndex = 0;
-            KeyLabel.Text = "New Api Key";
+            keyLabel.AutoSize = true;
+            keyLabel.Font = new Font("Segoe UI", 14F);
+            keyLabel.Location = new Point(9, 32);
+            keyLabel.Margin = new Padding(5, 0, 5, 0);
+            keyLabel.Name = "keyLabel";
+            keyLabel.Size = new Size(118, 25);
+            keyLabel.TabIndex = 0;
+            keyLabel.Text = "New Api Key";
             // 
-            // DailyCheckBox
+            // dailyCheckBox
             // 
-            DailyCheckBox.AutoSize = true;
-            DailyCheckBox.Checked = true;
-            DailyCheckBox.CheckState = CheckState.Checked;
-            DailyCheckBox.Enabled = false;
-            DailyCheckBox.Location = new Point(566, 287);
-            DailyCheckBox.Margin = new Padding(5);
-            DailyCheckBox.Name = "DailyCheckBox";
-            DailyCheckBox.Size = new Size(73, 29);
-            DailyCheckBox.TabIndex = 1;
-            DailyCheckBox.Text = "&Daily";
-            DailyCheckBox.UseVisualStyleBackColor = true;
-            DailyCheckBox.CheckedChanged += DailyCheckBox_CheckedChanged;
+            dailyCheckBox.AutoSize = true;
+            dailyCheckBox.Checked = true;
+            dailyCheckBox.CheckState = CheckState.Checked;
+            dailyCheckBox.Enabled = false;
+            dailyCheckBox.Location = new Point(566, 287);
+            dailyCheckBox.Margin = new Padding(5);
+            dailyCheckBox.Name = "dailyCheckBox";
+            dailyCheckBox.Size = new Size(73, 29);
+            dailyCheckBox.TabIndex = 1;
+            dailyCheckBox.Text = "&Daily";
+            dailyCheckBox.UseVisualStyleBackColor = true;
+            dailyCheckBox.CheckedChanged += DailyCheckBox_CheckedChanged;
             // 
-            // WeeklyCheckBox
+            // weeklyCheckBox
             // 
-            WeeklyCheckBox.AutoSize = true;
-            WeeklyCheckBox.Checked = true;
-            WeeklyCheckBox.CheckState = CheckState.Checked;
-            WeeklyCheckBox.Enabled = false;
-            WeeklyCheckBox.Location = new Point(669, 287);
-            WeeklyCheckBox.Margin = new Padding(5);
-            WeeklyCheckBox.Name = "WeeklyCheckBox";
-            WeeklyCheckBox.Size = new Size(91, 29);
-            WeeklyCheckBox.TabIndex = 2;
-            WeeklyCheckBox.Text = "&Weekly";
-            WeeklyCheckBox.UseVisualStyleBackColor = true;
-            WeeklyCheckBox.CheckedChanged += WeeklyCheckBox_CheckedChanged;
+            weeklyCheckBox.AutoSize = true;
+            weeklyCheckBox.Checked = true;
+            weeklyCheckBox.CheckState = CheckState.Checked;
+            weeklyCheckBox.Enabled = false;
+            weeklyCheckBox.Location = new Point(669, 287);
+            weeklyCheckBox.Margin = new Padding(5);
+            weeklyCheckBox.Name = "weeklyCheckBox";
+            weeklyCheckBox.Size = new Size(91, 29);
+            weeklyCheckBox.TabIndex = 2;
+            weeklyCheckBox.Text = "&Weekly";
+            weeklyCheckBox.UseVisualStyleBackColor = true;
+            weeklyCheckBox.CheckedChanged += WeeklyCheckBox_CheckedChanged;
             // 
-            // SpecialCheckBox
+            // specialCheckBox
             // 
-            SpecialCheckBox.AutoSize = true;
-            SpecialCheckBox.Checked = true;
-            SpecialCheckBox.CheckState = CheckState.Checked;
-            SpecialCheckBox.Enabled = false;
-            SpecialCheckBox.Location = new Point(789, 287);
-            SpecialCheckBox.Margin = new Padding(5);
-            SpecialCheckBox.Name = "SpecialCheckBox";
-            SpecialCheckBox.Size = new Size(91, 29);
-            SpecialCheckBox.TabIndex = 3;
-            SpecialCheckBox.Text = "&Special";
-            SpecialCheckBox.UseVisualStyleBackColor = true;
-            SpecialCheckBox.CheckedChanged += SpecialCheckBox_CheckedChanged;
+            specialCheckBox.AutoSize = true;
+            specialCheckBox.Checked = true;
+            specialCheckBox.CheckState = CheckState.Checked;
+            specialCheckBox.Enabled = false;
+            specialCheckBox.Location = new Point(789, 287);
+            specialCheckBox.Margin = new Padding(5);
+            specialCheckBox.Name = "specialCheckBox";
+            specialCheckBox.Size = new Size(91, 29);
+            specialCheckBox.TabIndex = 3;
+            specialCheckBox.Text = "&Special";
+            specialCheckBox.UseVisualStyleBackColor = true;
+            specialCheckBox.CheckedChanged += SpecialCheckBox_CheckedChanged;
             // 
-            // AccountsFlowLayoutPanel
+            // accountsFlowLayoutPanel
             // 
-            AccountsFlowLayoutPanel.Location = new Point(566, 202);
-            AccountsFlowLayoutPanel.Margin = new Padding(5);
-            AccountsFlowLayoutPanel.Name = "AccountsFlowLayoutPanel";
-            AccountsFlowLayoutPanel.Size = new Size(487, 75);
-            AccountsFlowLayoutPanel.TabIndex = 4;
+            accountsFlowLayoutPanel.Location = new Point(566, 202);
+            accountsFlowLayoutPanel.Margin = new Padding(5);
+            accountsFlowLayoutPanel.Name = "accountsFlowLayoutPanel";
+            accountsFlowLayoutPanel.Size = new Size(487, 75);
+            accountsFlowLayoutPanel.TabIndex = 4;
             // 
-            // UpdateButton
+            // updateButton
             // 
-            UpdateButton.Enabled = false;
-            UpdateButton.Font = new Font("Segoe UI", 16F);
-            UpdateButton.Location = new Point(954, 282);
-            UpdateButton.Margin = new Padding(5);
-            UpdateButton.Name = "UpdateButton";
-            UpdateButton.Size = new Size(118, 38);
-            UpdateButton.TabIndex = 5;
-            UpdateButton.Text = "&Update";
-            UpdateButton.UseVisualStyleBackColor = true;
-            UpdateButton.Click += UpdateButton_Click;
+            updateButton.Enabled = false;
+            updateButton.Font = new Font("Segoe UI", 16F);
+            updateButton.Location = new Point(954, 282);
+            updateButton.Margin = new Padding(5);
+            updateButton.Name = "updateButton";
+            updateButton.Size = new Size(118, 38);
+            updateButton.TabIndex = 5;
+            updateButton.Text = "&Update";
+            updateButton.UseVisualStyleBackColor = true;
+            updateButton.Click += UpdateButton_Click;
             // 
-            // ObjectivesDataGridView
+            // objectivesDataGridView
             // 
-            ObjectivesDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ObjectivesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ObjectivesDataGridView.Location = new Point(38, 330);
-            ObjectivesDataGridView.Margin = new Padding(5);
-            ObjectivesDataGridView.Name = "ObjectivesDataGridView";
-            ObjectivesDataGridView.RowHeadersVisible = false;
-            ObjectivesDataGridView.Size = new Size(1025, 569);
-            ObjectivesDataGridView.TabIndex = 6;
-            ObjectivesDataGridView.CellDoubleClick += ObjectivesDataGridView_CellDoubleClick;
+            objectivesDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            objectivesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            objectivesDataGridView.Location = new Point(38, 330);
+            objectivesDataGridView.Margin = new Padding(5);
+            objectivesDataGridView.Name = "objectivesDataGridView";
+            objectivesDataGridView.RowHeadersVisible = false;
+            objectivesDataGridView.Size = new Size(1025, 569);
+            objectivesDataGridView.TabIndex = 6;
+            objectivesDataGridView.CellDoubleClick += ObjectivesDataGridView_CellDoubleClick;
             // 
             // titleLabel
             // 
@@ -272,22 +272,22 @@
             Controls.Add(hideCompletedCheckBox);
             Controls.Add(statusStrip);
             Controls.Add(titleLabel);
-            Controls.Add(ObjectivesDataGridView);
-            Controls.Add(UpdateButton);
-            Controls.Add(AccountsFlowLayoutPanel);
-            Controls.Add(SpecialCheckBox);
-            Controls.Add(WeeklyCheckBox);
-            Controls.Add(DailyCheckBox);
-            Controls.Add(KeysGroupBox);
+            Controls.Add(objectivesDataGridView);
+            Controls.Add(updateButton);
+            Controls.Add(accountsFlowLayoutPanel);
+            Controls.Add(specialCheckBox);
+            Controls.Add(weeklyCheckBox);
+            Controls.Add(dailyCheckBox);
+            Controls.Add(keysGroupBox);
             Font = new Font("Segoe UI", 14F);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(5);
             Name = "MainForm";
             Text = "WVT";
             FormClosing += MainForm_FormClosing;
-            KeysGroupBox.ResumeLayout(false);
-            KeysGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)ObjectivesDataGridView).EndInit();
+            keysGroupBox.ResumeLayout(false);
+            keysGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)objectivesDataGridView).EndInit();
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
             ResumeLayout(false);
@@ -296,20 +296,20 @@
 
         #endregion
 
-        private GroupBox KeysGroupBox;
-        private TextBox KeyTextBox;
-        private Label KeyLabel;
-        private Label NameLabel;
-        private Button KeyAddButton;
-        private TextBox NameTextBox;
-        private Button KeyRemoveButton;
-        private ListBox KeyListBox;
-        private CheckBox DailyCheckBox;
-        private CheckBox WeeklyCheckBox;
-        private CheckBox SpecialCheckBox;
-        private FlowLayoutPanel AccountsFlowLayoutPanel;
-        private Button UpdateButton;
-        private DataGridView ObjectivesDataGridView;
+        private GroupBox keysGroupBox;
+        private TextBox keyTextBox;
+        private Label keyLabel;
+        private Label nameLabel;
+        private Button keyAddButton;
+        private TextBox nameTextBox;
+        private Button keyRemoveButton;
+        private ListBox keyListBox;
+        private CheckBox dailyCheckBox;
+        private CheckBox weeklyCheckBox;
+        private CheckBox specialCheckBox;
+        private FlowLayoutPanel accountsFlowLayoutPanel;
+        private Button updateButton;
+        private DataGridView objectivesDataGridView;
         private Label titleLabel;
         private StatusStrip statusStrip;
         private ToolStripStatusLabel toolStripStatusLabel;

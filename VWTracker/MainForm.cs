@@ -40,17 +40,17 @@ namespace WVTLib
 
         private void LoadApiKeys()
         {
-            KeyListBox.DataSource = null;
-            KeyListBox.DataSource = new BindingList<ApiKeyModel>(_settings.ApiKeys);
-            KeyListBox.DisplayMember = "DisplayName";
-            KeyListBox.ValueMember = "Token";
+            keyListBox.DataSource = null;
+            keyListBox.DataSource = new BindingList<ApiKeyModel>(_settings.ApiKeys);
+            keyListBox.DisplayMember = "DisplayName";
+            keyListBox.ValueMember = "Token";
 
 
-            if (KeyListBox.SelectedItem is ApiKeyModel selectedKey)
+            if (keyListBox.SelectedItem is ApiKeyModel selectedKey)
             {
                 var index = _settings.ApiKeys.FindIndex(k => k.Name == selectedKey.Name && k.Token == selectedKey.Token);
                 if (index >= 0)
-                    KeyListBox.SelectedIndex = index;
+                    keyListBox.SelectedIndex = index;
             }
 
             UpdateAccountFilters();
@@ -59,31 +59,31 @@ namespace WVTLib
 
         private void UpdateAccountFilters()
         {
-            AccountsFlowLayoutPanel.Controls.Clear();
+            accountsFlowLayoutPanel.Controls.Clear();
             foreach (var apiKey in _settings.ApiKeys.Where(k => k.IsValid))
             {
                 var checkBox = new CheckBox { Text = apiKey.Name, Checked = true, Tag = apiKey };
                 checkBox.CheckedChanged += AccountCheckBox_CheckedChanged;
-                AccountsFlowLayoutPanel.Controls.Add(checkBox);
+                accountsFlowLayoutPanel.Controls.Add(checkBox);
             }
         }
         private void UpdateControlsEnabledState()
         {
-            bool hasKeys = KeyListBox.Items.Count > 0;
+            bool hasKeys = keyListBox.Items.Count > 0;
 
-            KeyRemoveButton.Enabled = hasKeys;
-            DailyCheckBox.Enabled = hasKeys;
-            WeeklyCheckBox.Enabled = hasKeys;
-            SpecialCheckBox.Enabled = hasKeys;
+            keyRemoveButton.Enabled = hasKeys;
+            dailyCheckBox.Enabled = hasKeys;
+            weeklyCheckBox.Enabled = hasKeys;
+            specialCheckBox.Enabled = hasKeys;
             hideCompletedCheckBox.Enabled = hasKeys;
-            UpdateButton.Enabled = hasKeys;
+            updateButton.Enabled = hasKeys;
         }
         private void SetupDataGridView()
         {
-            ObjectivesDataGridView.AutoGenerateColumns = false;
-            ObjectivesDataGridView.Columns.Clear();
+            objectivesDataGridView.AutoGenerateColumns = false;
+            objectivesDataGridView.Columns.Clear();
 
-            ObjectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            objectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Account",
                 HeaderText = "Account",
@@ -91,7 +91,7 @@ namespace WVTLib
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
-            ObjectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            objectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Endpoint",
                 HeaderText = "Endpoint",
@@ -99,7 +99,7 @@ namespace WVTLib
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
-            ObjectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            objectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Track",
                 HeaderText = "Track",
@@ -107,7 +107,7 @@ namespace WVTLib
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
-            ObjectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            objectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Title",
                 HeaderText = "Title",
@@ -115,7 +115,7 @@ namespace WVTLib
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
             });
 
-            ObjectivesDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
+            objectivesDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
             {
                 DataPropertyName = "Completed",
                 HeaderText = "Completed",
@@ -123,7 +123,7 @@ namespace WVTLib
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
-            ObjectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            objectivesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Others",
                 HeaderText = "Others",
@@ -131,27 +131,27 @@ namespace WVTLib
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
-            ObjectivesDataGridView.AllowUserToAddRows = false;
-            ObjectivesDataGridView.AllowUserToDeleteRows = false;
-            ObjectivesDataGridView.ReadOnly = true;
-            ObjectivesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            ObjectivesDataGridView.MultiSelect = false;
-            ObjectivesDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            objectivesDataGridView.AllowUserToAddRows = false;
+            objectivesDataGridView.AllowUserToDeleteRows = false;
+            objectivesDataGridView.ReadOnly = true;
+            objectivesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            objectivesDataGridView.MultiSelect = false;
+            objectivesDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
         }
 
         private void StyleDataGridView()
         {
-            ObjectivesDataGridView.BorderStyle = BorderStyle.None;
-            ObjectivesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(238, 239, 249);
-            ObjectivesDataGridView.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            ObjectivesDataGridView.DefaultCellStyle.SelectionBackColor = Color.DarkTurquoise;
-            ObjectivesDataGridView.DefaultCellStyle.SelectionForeColor = Color.WhiteSmoke;
-            ObjectivesDataGridView.BackgroundColor = Color.White;
+            objectivesDataGridView.BorderStyle = BorderStyle.None;
+            objectivesDataGridView.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(238, 239, 249);
+            objectivesDataGridView.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            objectivesDataGridView.DefaultCellStyle.SelectionBackColor = Color.DarkTurquoise;
+            objectivesDataGridView.DefaultCellStyle.SelectionForeColor = Color.WhiteSmoke;
+            objectivesDataGridView.BackgroundColor = Color.White;
 
-            ObjectivesDataGridView.EnableHeadersVisualStyles = false;
-            ObjectivesDataGridView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            ObjectivesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(20, 25, 72);
-            ObjectivesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            objectivesDataGridView.EnableHeadersVisualStyles = false;
+            objectivesDataGridView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            objectivesDataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(20, 25, 72);
+            objectivesDataGridView.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
         }
         private void StartBackgroundRefresh()
         {
@@ -176,7 +176,7 @@ namespace WVTLib
         }
         private async void UpdateButton_Click(object sender, EventArgs e)
         {
-            UpdateButton.Enabled = false;
+            updateButton.Enabled = false;
             toolStripStatusLabel.Text = "Starting update...";
             try
             {
@@ -184,15 +184,15 @@ namespace WVTLib
             }
             finally
             {
-                UpdateButton.Enabled = true;
+                updateButton.Enabled = true;
             }
         }
         private void KeyAddButton_Click(object sender, EventArgs e)
         {
             try
             {
-                string name = NameTextBox.Text.Trim();
-                string key = KeyTextBox.Text.Trim();
+                string name = nameTextBox.Text.Trim();
+                string key = keyTextBox.Text.Trim();
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
@@ -220,8 +220,8 @@ namespace WVTLib
 
                 LoadApiKeys();
 
-                NameTextBox.Clear();
-                KeyTextBox.Clear();
+                nameTextBox.Clear();
+                keyTextBox.Clear();
                 UpdateControlsEnabledState();
             }
             catch (Exception ex)
@@ -231,7 +231,7 @@ namespace WVTLib
         }
         private void KeyRemoveButton_Click(object sender, EventArgs e)
         {
-            if (KeyListBox.SelectedItem is ApiKeyModel selectedKey)
+            if (keyListBox.SelectedItem is ApiKeyModel selectedKey)
             {
                 _settings.ApiKeys.Remove(selectedKey);
                 _settings.Save();
@@ -270,15 +270,15 @@ namespace WVTLib
             if (e.RowIndex >= 0)
             {
                 int currentRowIndex = e.RowIndex;
-                var objective = (DisplayObjective)ObjectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
+                var objective = (DisplayObjective)objectivesDataGridView.Rows[e.RowIndex].DataBoundItem;
                 ToggleObjectiveCompletion(objective.Account, objective.Endpoint, objective.Title);
 
                 // Restore the selection after the grid has been updated
-                if (ObjectivesDataGridView.Rows.Count > currentRowIndex)
+                if (objectivesDataGridView.Rows.Count > currentRowIndex)
                 {
-                    ObjectivesDataGridView.ClearSelection();
-                    ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
-                    ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
+                    objectivesDataGridView.ClearSelection();
+                    objectivesDataGridView.Rows[currentRowIndex].Selected = true;
+                    objectivesDataGridView.CurrentCell = objectivesDataGridView.Rows[currentRowIndex].Cells[0];
                 }
             }
         }
@@ -385,29 +385,29 @@ namespace WVTLib
                 return;
             }
 
-            int currentRowIndex = ObjectivesDataGridView.CurrentRow?.Index ?? -1;
+            int currentRowIndex = objectivesDataGridView.CurrentRow?.Index ?? -1;
 
-            if (AccountsFlowLayoutPanel.Controls.Count > 0)
+            if (accountsFlowLayoutPanel.Controls.Count > 0)
             {
                 var selectedAccounts = GetSelectedAccounts();
                 var allObjectivesGrouped = GroupAllObjectives();
                 var filteredObjectives = FilterAndPrepareObjectives(allObjectivesGrouped, selectedAccounts);
 
-                ObjectivesDataGridView.DataSource = null;
-                ObjectivesDataGridView.DataSource = filteredObjectives;
+                objectivesDataGridView.DataSource = null;
+                objectivesDataGridView.DataSource = filteredObjectives;
 
-                if (currentRowIndex >= 0 && currentRowIndex < ObjectivesDataGridView.Rows.Count)
+                if (currentRowIndex >= 0 && currentRowIndex < objectivesDataGridView.Rows.Count)
                 {
-                    ObjectivesDataGridView.ClearSelection();
-                    ObjectivesDataGridView.Rows[currentRowIndex].Selected = true;
-                    ObjectivesDataGridView.CurrentCell = ObjectivesDataGridView.Rows[currentRowIndex].Cells[0];
+                    objectivesDataGridView.ClearSelection();
+                    objectivesDataGridView.Rows[currentRowIndex].Selected = true;
+                    objectivesDataGridView.CurrentCell = objectivesDataGridView.Rows[currentRowIndex].Cells[0];
                 }
             }
         }
 
         private List<string> GetSelectedAccounts()
         {
-            return AccountsFlowLayoutPanel.Controls.OfType<CheckBox>()
+            return accountsFlowLayoutPanel.Controls.OfType<CheckBox>()
                 .Where(chk => chk.Checked && chk.Tag is ApiKeyModel model && model.Name != null)
                 .Select(chk => ((ApiKeyModel)chk.Tag!).Name)
                 .ToList();
@@ -446,9 +446,9 @@ namespace WVTLib
         }
         private bool IsObjectiveTypeSelected(string endpoint)
         {
-            return (DailyCheckBox.Checked && endpoint == "daily") ||
-                   (WeeklyCheckBox.Checked && endpoint == "weekly") ||
-                   (SpecialCheckBox.Checked && endpoint == "special");
+            return (dailyCheckBox.Checked && endpoint == "daily") ||
+                   (weeklyCheckBox.Checked && endpoint == "weekly") ||
+                   (specialCheckBox.Checked && endpoint == "special");
         }
         private bool IsLocallyCompleted(GroupedObjective objective, string account)
         {
