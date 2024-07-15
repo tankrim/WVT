@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Serilog;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.Windows.Forms;
 using WVTApp.Models;
 using WVTLib;
 using WVTLib.Models;
@@ -186,8 +188,8 @@ namespace WVTApp
                 var newKey = new ApiKeyModel(name, key);
 
                 _settings.ApiKeys.Add(newKey);
-
                 _settings.Save();
+                Log.Information("API key added: {KeyName}", newKey.Name);
 
                 LoadApiKeys();
 
@@ -207,6 +209,8 @@ namespace WVTApp
             {
                 _settings.ApiKeys.Remove(selectedKey);
                 _settings.Save();
+                Log.Information("API key removed: {KeyName}", selectedKey.Name);
+
                 LoadApiKeys();
                 UpdateObjectivesGrid();
                 UpdateControlsEnabledState();
@@ -326,6 +330,7 @@ namespace WVTApp
 
             try
             {
+                Log.Information("Starting objectives update");
                 await this.InvokeAsync(() => toolStripStatusLabel.Text = "Updating objectives...");
                 _allObjectives.Clear();
                 var fetchTasks = _settings.ApiKeys
@@ -362,16 +367,19 @@ namespace WVTApp
                         _settings.Save();
                         LoadApiKeys();
                         string invalidKeyNames = string.Join(", ", invalidatedKeys);
+                        Log.Warning("Keys marked as invalid: {keyNames}", invalidKeyNames);
                         MessageBox.Show($"The following API key(s) are invalid or unauthorized and have been marked as invalid: {invalidKeyNames}",
                                         "Invalid API Key(s)", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
 
+                    Log.Information("Objectives update completed");
                     UpdateObjectivesGrid();
                     toolStripStatusLabel.Text = "Update completed.";
                 });
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "Error fetching objectives");
                 MessageBox.Show($"Error fetching objectives: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 toolStripStatusLabel.Text = "Update failed.";
             }
@@ -386,15 +394,19 @@ namespace WVTApp
 
             try
             {
+                Log.Debug("Fetching objectives for endpoint {Endpoint} with API key {KeyName}", endpoint, apiKey.Name);
                 var objectives = await _wvClient.GetObjectivesAsync(apiKey, endpoint);
+                Log.Debug("Successfully fetched {Count} objectives for endpoint {Endpoint}", objectives.Count, endpoint);
                 return (apiKey, endpoint, objectives, null);
             }
             catch (UnauthorizedAccessException ex)
             {
+                Log.Warning(ex, "API key {apiKey.Name} is unauthorized for endpoint {endpoint}", apiKey.Name, endpoint);
                 return (apiKey, endpoint, null, new UnauthorizedAccessException($"API key '{apiKey.Name}' is unauthorized for endpoint '{endpoint}'.", ex));
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "Error fetching objectives for endpoint {Endpoint} with API key {KeyName}", endpoint, apiKey.Name);
                 return (apiKey, endpoint, null, ex);
             }
         }
@@ -402,6 +414,7 @@ namespace WVTApp
         // Background refresh
         private void StartBackgroundRefresh()
         {
+            Log.Information("Starting background refresh task");
             Task.Run(async () =>
             {
                 while (!this.IsDisposed)
@@ -412,10 +425,12 @@ namespace WVTApp
                         await RefreshInBackground();
                     }
                 }
+                Log.Information("Background refresh task ended");
             });
         }
         private async Task RefreshInBackground()
         {
+            Log.Information("Starting background refresh cycle");
             try
             {
                 await FetchAndUpdateObjectives();
@@ -426,9 +441,11 @@ namespace WVTApp
                     UpdateObjectivesGrid();
                     toolStripStatusLabel.Text = "Background refresh completed.";
                 });
+                Log.Information("Background refresh cycle completed successfully");
             }
             catch (Exception ex)
             {
+                Log.Error(ex, "Error in background refresh cycle");
                 // Marshal error handling back to the UI thread
                 await this.InvokeAsync(() =>
                 {
