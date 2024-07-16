@@ -278,7 +278,7 @@
             stopUpdateButton.Size = new Size(75, 48);
             stopUpdateButton.TabIndex = 11;
             stopUpdateButton.UseVisualStyleBackColor = false;
-            stopUpdateButton.Click += stopUpdateButton_Click;
+            stopUpdateButton.Click += StopUpdateButton_Click;
             // 
             // MainForm
             // 

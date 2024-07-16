@@ -206,7 +206,7 @@ namespace WVTLib
                 stopUpdateButton.Enabled = false;
             }
         }
-        private void stopUpdateButton_Click(object sender, EventArgs e)
+        private void StopUpdateButton_Click(object sender, EventArgs e)
         {
             _cts?.Cancel();
             toolStripStatusLabel.Text = "Cancelling update...";
