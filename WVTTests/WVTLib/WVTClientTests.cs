@@ -72,7 +72,20 @@ namespace TestWVT.WVTLib
             // Act & Assert
             await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "daily", CancellationToken.None))
                 .Should().ThrowAsync<UnauthorizedAccessException>()
-                .WithMessage("API key 'TestKey' is invalid or unauthorized.");
+                .WithMessage("API key 'TestKey' is unauthorized. It may be invalid or lack necessary permissions.");
+        }
+
+        [Fact]
+        public async Task GetObjectivesAsync_ForbiddenApiKey_ThrowsUnauthorizedAccessException()
+        {
+            // Arrange
+            var apiKey = new ApiKeyModel("TestKey", "invalid-token");
+            SetupMockHttpMessageHandler(HttpStatusCode.Forbidden, "");
+
+            // Act & Assert
+            await _client.Invoking(c => c.GetObjectivesAsync(apiKey, "daily", CancellationToken.None))
+                .Should().ThrowAsync<UnauthorizedAccessException>()
+                .WithMessage("API key 'TestKey' is forbidden. It may be invalid or lack necessary permissions.");
         }
 
         [Fact]

@@ -80,8 +80,14 @@ namespace WVTLib
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    _logger.Warning("Unauthorized access attempt for API key {KeyName}", apiKey.Name);
-                    throw new UnauthorizedAccessException($"API key '{apiKey.Name}' is invalid or unauthorized.");
+                    _logger.Warning("Unauthorized access attempt for API key {KeyName}.  The key may be invalid or lack necessary permissions.", apiKey.Name);
+                    throw new UnauthorizedAccessException($"API key '{apiKey.Name}' is unauthorized. It may be invalid or lack necessary permissions.");
+                }
+
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _logger.Warning("Forbidden access for API key {KeyName}. The key may be invalid or lack necessary permissions.", apiKey.Name);
+                    throw new UnauthorizedAccessException($"API key '{apiKey.Name}' is forbidden. It may be invalid or lack necessary permissions.");
                 }
 
                 response.EnsureSuccessStatusCode();
