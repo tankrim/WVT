@@ -69,7 +69,7 @@
             keysGroupBox.Name = "keysGroupBox";
             keysGroupBox.Padding = new Padding(5);
             keysGroupBox.Size = new Size(475, 283);
-            keysGroupBox.TabIndex = 0;
+            keysGroupBox.TabIndex = 40;
             keysGroupBox.TabStop = false;
             keysGroupBox.Text = "Key Managment";
             // 
@@ -81,7 +81,7 @@
             keyRemoveButton.Margin = new Padding(5);
             keyRemoveButton.Name = "keyRemoveButton";
             keyRemoveButton.Size = new Size(197, 38);
-            keyRemoveButton.TabIndex = 6;
+            keyRemoveButton.TabIndex = 60;
             keyRemoveButton.Text = "Remove Selected Key";
             keyRemoveButton.UseVisualStyleBackColor = true;
             keyRemoveButton.Click += KeyRemoveButton_Click;
@@ -95,7 +95,7 @@
             keyListBox.Margin = new Padding(5);
             keyListBox.Name = "keyListBox";
             keyListBox.Size = new Size(186, 154);
-            keyListBox.TabIndex = 5;
+            keyListBox.TabIndex = 50;
             // 
             // nameTextBox
             // 
@@ -104,7 +104,7 @@
             nameTextBox.Margin = new Padding(5);
             nameTextBox.Name = "nameTextBox";
             nameTextBox.Size = new Size(155, 32);
-            nameTextBox.TabIndex = 4;
+            nameTextBox.TabIndex = 44;
             // 
             // nameLabel
             // 
@@ -114,7 +114,7 @@
             nameLabel.Margin = new Padding(5, 0, 5, 0);
             nameLabel.Name = "nameLabel";
             nameLabel.Size = new Size(62, 25);
-            nameLabel.TabIndex = 3;
+            nameLabel.TabIndex = 43;
             nameLabel.Text = "Name";
             // 
             // keyAddButton
@@ -124,7 +124,7 @@
             keyAddButton.Margin = new Padding(5);
             keyAddButton.Name = "keyAddButton";
             keyAddButton.Size = new Size(118, 38);
-            keyAddButton.TabIndex = 2;
+            keyAddButton.TabIndex = 45;
             keyAddButton.Text = "Add Key";
             keyAddButton.UseVisualStyleBackColor = true;
             keyAddButton.Click += KeyAddButton_Click;
@@ -136,7 +136,7 @@
             keyTextBox.Margin = new Padding(5);
             keyTextBox.Name = "keyTextBox";
             keyTextBox.Size = new Size(155, 32);
-            keyTextBox.TabIndex = 1;
+            keyTextBox.TabIndex = 42;
             // 
             // keyLabel
             // 
@@ -146,7 +146,7 @@
             keyLabel.Margin = new Padding(5, 0, 5, 0);
             keyLabel.Name = "keyLabel";
             keyLabel.Size = new Size(118, 25);
-            keyLabel.TabIndex = 0;
+            keyLabel.TabIndex = 41;
             keyLabel.Text = "New Api Key";
             // 
             // dailyCheckBox
@@ -159,7 +159,7 @@
             dailyCheckBox.Margin = new Padding(5);
             dailyCheckBox.Name = "dailyCheckBox";
             dailyCheckBox.Size = new Size(73, 29);
-            dailyCheckBox.TabIndex = 1;
+            dailyCheckBox.TabIndex = 20;
             dailyCheckBox.Text = "&Daily";
             dailyCheckBox.UseVisualStyleBackColor = true;
             dailyCheckBox.CheckedChanged += DailyCheckBox_CheckedChanged;
@@ -174,7 +174,7 @@
             weeklyCheckBox.Margin = new Padding(5);
             weeklyCheckBox.Name = "weeklyCheckBox";
             weeklyCheckBox.Size = new Size(91, 29);
-            weeklyCheckBox.TabIndex = 2;
+            weeklyCheckBox.TabIndex = 21;
             weeklyCheckBox.Text = "&Weekly";
             weeklyCheckBox.UseVisualStyleBackColor = true;
             weeklyCheckBox.CheckedChanged += WeeklyCheckBox_CheckedChanged;
@@ -189,7 +189,7 @@
             specialCheckBox.Margin = new Padding(5);
             specialCheckBox.Name = "specialCheckBox";
             specialCheckBox.Size = new Size(91, 29);
-            specialCheckBox.TabIndex = 3;
+            specialCheckBox.TabIndex = 22;
             specialCheckBox.Text = "&Special";
             specialCheckBox.UseVisualStyleBackColor = true;
             specialCheckBox.CheckedChanged += SpecialCheckBox_CheckedChanged;
@@ -200,7 +200,7 @@
             accountsFlowLayoutPanel.Margin = new Padding(5);
             accountsFlowLayoutPanel.Name = "accountsFlowLayoutPanel";
             accountsFlowLayoutPanel.Size = new Size(487, 75);
-            accountsFlowLayoutPanel.TabIndex = 4;
+            accountsFlowLayoutPanel.TabIndex = 30;
             // 
             // updateButton
             // 
@@ -210,7 +210,7 @@
             updateButton.Margin = new Padding(5);
             updateButton.Name = "updateButton";
             updateButton.Size = new Size(118, 38);
-            updateButton.TabIndex = 5;
+            updateButton.TabIndex = 10;
             updateButton.Text = "&Update";
             updateButton.UseVisualStyleBackColor = true;
             updateButton.Click += UpdateButton_Click;
@@ -224,7 +224,7 @@
             objectivesDataGridView.Name = "objectivesDataGridView";
             objectivesDataGridView.RowHeadersVisible = false;
             objectivesDataGridView.Size = new Size(1025, 569);
-            objectivesDataGridView.TabIndex = 6;
+            objectivesDataGridView.TabIndex = 2;
             objectivesDataGridView.CellDoubleClick += ObjectivesDataGridView_CellDoubleClick;
             // 
             // titleLabel
@@ -234,7 +234,7 @@
             titleLabel.Location = new Point(627, 47);
             titleLabel.Name = "titleLabel";
             titleLabel.Size = new Size(364, 51);
-            titleLabel.TabIndex = 7;
+            titleLabel.TabIndex = 1;
             titleLabel.Text = "Wizard's Vault Tracker";
             // 
             // statusStrip
@@ -261,7 +261,7 @@
             hideCompletedCheckBox.Margin = new Padding(5);
             hideCompletedCheckBox.Name = "hideCompletedCheckBox";
             hideCompletedCheckBox.Size = new Size(167, 29);
-            hideCompletedCheckBox.TabIndex = 9;
+            hideCompletedCheckBox.TabIndex = 23;
             hideCompletedCheckBox.Text = "Hide Co&mpleted";
             hideCompletedCheckBox.UseVisualStyleBackColor = true;
             hideCompletedCheckBox.CheckedChanged += HideCompletedCheckBox_CheckedChanged;
@@ -276,7 +276,7 @@
             stopUpdateButton.Location = new Point(1006, 274);
             stopUpdateButton.Name = "stopUpdateButton";
             stopUpdateButton.Size = new Size(75, 48);
-            stopUpdateButton.TabIndex = 10;
+            stopUpdateButton.TabIndex = 11;
             stopUpdateButton.UseVisualStyleBackColor = false;
             stopUpdateButton.Click += stopUpdateButton_Click;
             // 
