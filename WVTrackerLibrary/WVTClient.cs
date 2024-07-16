@@ -27,6 +27,7 @@ namespace WVTLib
 
             var circuitBreakerPolicy = Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
+                .Or<TimeoutException>()
                 .OrResult(msg => (int)msg.StatusCode >= 500 || msg.StatusCode == HttpStatusCode.RequestTimeout)
                 .CircuitBreakerAsync(
                     handledEventsAllowedBeforeBreaking: 5,
@@ -46,6 +47,7 @@ namespace WVTLib
 
             var retryPolicy = Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
+                .Or<TimeoutException>()
                 .OrResult(msg => (int)msg.StatusCode >= 500 || msg.StatusCode == HttpStatusCode.RequestTimeout)
                 .WaitAndRetryAsync(
                     3,

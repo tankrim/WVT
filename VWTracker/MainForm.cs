@@ -38,7 +38,7 @@ namespace WVTLib
             string baseUrl = "https://api.guildwars2.com/v2/account/wizardsvault/";
             List<string> endpoints = ["daily", "weekly", "special"];
             var httpClient = new HttpClient();
-            TimeSpan requestTimeout = TimeSpan.FromSeconds(10);  // Timeout for individual requests in SECONDS
+            TimeSpan requestTimeout = TimeSpan.FromSeconds(30);  // Timeout for individual requests in SECONDS
             _wvClient = new WVTClient(httpClient, baseUrl, endpoints, _logger, requestTimeout);
         }
 
